@@ -1,9 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { CreateClientInput } from './services/client.service.js';
 
 contextBridge.exposeInMainWorld('autoEcole', {
   clients: {
-    create: (input: CreateClientInput) => ipcRenderer.invoke('clients:create', input),
+    create: (input: unknown) => ipcRenderer.invoke('clients:create', input),
   },
   updater: {
     check: () => ipcRenderer.invoke('updater:check'),
