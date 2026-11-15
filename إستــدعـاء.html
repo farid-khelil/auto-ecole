@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استدعاء</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #e9e9e9; }
+
+  /* ---------- Edit panel (not printed) ---------- */
+  .panel {
+    max-width: 210mm; margin: 12px auto; padding: 12px 14px;
+    background: #fff; border: 1px solid #ccc; border-radius: 8px;
+    font-family: Arial, sans-serif; direction: rtl;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;
+  }
+  .panel label { font-size: 12px; color: #444; display: flex; flex-direction: column; gap: 3px; }
+  .panel input { padding: 6px 8px; font-size: 14px; border: 1px solid #bbb; border-radius: 5px; font-family: inherit; }
+  .panel .actions { grid-column: 1 / -1; display: flex; gap: 8px; }
+  .panel button { padding: 8px 16px; font-size: 14px; cursor: pointer; border-radius: 5px; border: 1px solid #333; background: #222; color: #fff; }
+  .panel button.sec { background: #fff; color: #222; }
+
+  /* ---------- Page ---------- */
+  .page {
+    width: 210mm; height: 297mm; margin: 0 auto 12px; background: #fff;
+    position: relative; overflow: hidden;
+    font-family: "Simplified Arabic", "Traditional Arabic", "Arabic Typesetting", "Noto Naskh Arabic", "Times New Roman", serif;
+    font-weight: bold; color: #000; direction: rtl;
+  }
+
+  .copy { position: absolute; left: 0; right: 0; height: 148mm; padding: 0 20mm 0 20mm; }
+  .copy.top    { top: 10mm; }
+  .copy.bottom { top: 158mm; }
+
+  .republic { text-align: center; font-size: 15pt; text-decoration: underline; margin: 0; padding-top: 6mm; }
+
+  .school { margin-top: 10mm; margin-right: 0; width: 62mm; text-align: center; }
+  .school div { font-size: 15pt; text-decoration: underline; line-height: 1.75; text-align: right; }
+  .school .kash { text-align: justify; text-align-last: justify; }
+  .school .city { padding-right: 8mm; }
+
+  .titlerow { position: relative; height: 16mm; margin-top: 8mm; }
+  .titlerow .num { position: absolute; right: 0; top: 0; font-size: 15pt; }
+  .titlerow .title { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-size: 19pt; text-decoration: underline; letter-spacing: 1px; padding-right: 0; }
+
+  .body { margin-top: 4mm; font-size: 14pt; line-height: 1.75; }
+  .body p { margin: 0; }
+  .body .em { font-style: italic; }
+
+  .dateline { margin-top: 11mm; padding-right: 38mm; font-size: 14pt; }
+  .director { margin-top: 6mm; padding-right: 55mm; font-size: 14pt; }
+
+  /* Editable values */
+  .v { outline: none; border-radius: 2px; }
+  .v:hover, .v:focus { background: #fff6c2; }
+
+  @media print {
+    html, body { background: #fff; }
+    .panel { display: none; }
+    .page { margin: 0; box-shadow: none; }
+    .v:hover, .v:focus { background: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="panel" id="panel">
+  <label>رقم الاستدعاء <input data-in="num" value="2026/88"></label>
+  <label>الاسم واللقب <input data-in="name" value=""></label>
+  <label>العنوان <input data-in="addr" value=""></label>
+  <label>تاريخ الامتحان <input data-in="examdate" value=""></label>
+  <label>الساعة <input data-in="time" value="الثامنة صباحا"></label>
+  <label>صنف الرخصة <input data-in="cat" value="ب"></label>
+  <label>تاريخ التحرير <input data-in="issued" value=""></label>
+  <div class="actions">
+    <button onclick="window.print()">طباعة</button>
+    <button class="sec" onclick="resetVals()">إعادة القيم</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ============ COPY 1 ============ -->
+  <section class="copy top">
+    <p class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</p>
+
+    <div class="school">
+      <div>مدرســة تعليم السيـــــاقة</div>
+      <div class="kash">بـــــوطيبـــة محمـــــد</div>
+      <div>الحي الغربي - عين بوسيف</div>
+      <div class="city">المـــديـــــــــة</div>
+    </div>
+
+    <div class="titlerow">
+      <span class="num"><span class="v" contenteditable data-f="num">2026/88</span></span>
+      <div class="title">إستــــــدعـــــــــاء</div>
+    </div>
+
+    <div class="body">
+      <p>المطلوب من السيد (ة) : <span class="v" contenteditable data-f="name"></span></p>
+      <p>الساكن في : <span class="v" contenteditable data-f="addr"></span></p>
+      <p class="em">أن يتقدم إلى مدرسة تعليم السياقة يوم : <span class="v" contenteditable data-f="examdate"></span> إبتداءا من الساعة <span class="v" contenteditable data-f="time">الثامنة صباحا</span></p>
+      <p>من أجل إجراء الإمتحان النظري و التطبيقي لرخصة السياقة صنف (<span class="v" contenteditable data-f="cat">ب</span>)</p>
+      <p>مرفوق ببطاقة التعريف الوطنية وطابع بريدي بقيمة <span class="v" contenteditable data-f="fee">300</span> دج</p>
+    </div>
+
+    <div class="dateline">عين بوسيف في : <span class="v" contenteditable data-f="issued"></span></div>
+    <div class="director">المــــــــــدير</div>
+  </section>
+
+  <!-- ============ COPY 2 ============ -->
+  <section class="copy bottom">
+    <p class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</p>
+
+    <div class="school">
+      <div>مدرســة تعليم السيـــــاقة</div>
+      <div class="kash">بـــــوطيبـــة محمـــــد</div>
+      <div>الحي الغربي - عين بوسيف</div>
+      <div class="city">المـــديـــــــــة</div>
+    </div>
+
+    <div class="titlerow">
+      <span class="num"><span class="v" contenteditable data-f="num">2026/88</span></span>
+      <div class="title">إستــــــدعـــــــــاء</div>
+    </div>
+
+    <div class="body">
+      <p>المطلوب من السيد (ة) : <span class="v" contenteditable data-f="name"></span></p>
+      <p>الساكن في : <span class="v" contenteditable data-f="addr"></span></p>
+      <p class="em">أن يتقدم إلى مدرسة تعليم السياقة يوم : <span class="v" contenteditable data-f="examdate"></span> إبتداءا من الساعة <span class="v" contenteditable data-f="time">الثامنة صباحا</span></p>
+      <p>من أجل إجراء الإمتحان النظري و التطبيقي لرخصة السياقة صنف (<span class="v" contenteditable data-f="cat">ب</span>)</p>
+      <p>مرفوق ببطاقة التعريف الوطنية وطابع بريدي بقيمة <span class="v" contenteditable data-f="fee">300</span> دج</p>
+    </div>
+
+    <div class="dateline">عين بوسيف في : <span class="v" contenteditable data-f="issued"></span></div>
+    <div class="director">المــــــــــدير</div>
+  </section>
+
+</div>
+
+<script>
+  var defaults = {};
+  document.querySelectorAll('[data-in]').forEach(function (i) { defaults[i.dataset.in] = i.value; });
+
+  function setField(key, value, except) {
+    document.querySelectorAll('[data-f="' + key + '"]').forEach(function (el) {
+      if (el !== except && el.textContent !== value) el.textContent = value;
+    });
+    var inp = document.querySelector('[data-in="' + key + '"]');
+    if (inp && inp !== except && inp.value !== value) inp.value = value;
+  }
+
+  // Panel -> pages
+  document.querySelectorAll('[data-in]').forEach(function (inp) {
+    inp.addEventListener('input', function () { setField(inp.dataset.in, inp.value, inp); });
+  });
+  // In-page editing -> everything else
+  document.querySelectorAll('[data-f]').forEach(function (el) {
+    el.addEventListener('input', function () { setField(el.dataset.f, el.textContent, el); });
+  });
+
+  function resetVals() { for (var k in defaults) setField(k, defaults[k]); }
+  // Apply panel values on load
+  for (var k in defaults) setField(k, defaults[k]);
+</script>
+</body>
+</html>

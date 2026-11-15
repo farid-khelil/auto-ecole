@@ -1,0 +1,870 @@
+/* ── Reference-Class Sidebar Styling (Fixed & Fit Screen) ── */
+.app-sidebar {
+  width: 240px;
+  flex: 0 0 240px;
+  box-sizing: border-box;
+  background: var(--bg-sidebar);
+  border-left: 1px solid var(--border-card);
+  padding: 16px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100vh;
+  max-height: 100vh;
+  position: sticky;
+  top: 0;
+  user-select: none;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-x: visible;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-card) transparent;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, border-color 0.2s ease;
+}
+
+.app-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.app-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-card);
+  border-radius: 4px;
+}
+
+/* Brand Header */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 6px;
+  flex: none;
+}
+
+.sidebar-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.sidebar-brand-text {
+  min-width: 0;
+}
+
+.sidebar-brand-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.sidebar-brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  font-weight: 500;
+}
+
+/* Nav Menu */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: none;
+}
+
+.sidebar-menu-label {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 2px 8px 4px;
+}
+
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: right;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.sidebar-nav-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.sidebar-icon {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.sidebar-nav-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badges */
+.sidebar-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--border-card);
+  color: var(--text-secondary);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.sidebar-badge.badge-danger {
+  background: var(--danger-tint);
+  color: var(--danger-text);
+}
+
+.sidebar-badge.badge-warning {
+  background: var(--warning-tint);
+  color: var(--warning-text);
+}
+
+.sidebar-nav-btn.active .sidebar-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.sidebar-spacer {
+  flex: 1;
+  min-height: 8px;
+}
+
+.sidebar-notification-wrap {
+  position: relative;
+  margin-bottom: 6px;
+  flex: none;
+}
+
+.sidebar-notification-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  position: relative;
+  user-select: none;
+}
+
+.sidebar-notification-button:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-input);
+  transform: translateY(-1px);
+}
+
+.sidebar-notification-button.active {
+  background: var(--primary-tint);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.sidebar-notification-button:active {
+  transform: scale(0.98);
+}
+
+.sidebar-notification-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-tint);
+  border-color: var(--primary);
+}
+
+.sidebar-notification-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sidebar-notification-icon-container {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(52, 99, 214, 0.08);
+  color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  transition: all 0.2s ease;
+}
+
+.sidebar-notification-button.has-alerts .sidebar-notification-icon-container {
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+
+.sidebar-notification-bell-icon {
+  display: block;
+  transform-origin: 50% 12%;
+  transition: color 0.15s ease;
+}
+
+/* Realistic Bell Ring Keyframe Animation */
+@keyframes ringBell {
+  0% { transform: rotate(0deg); }
+  12% { transform: rotate(16deg); }
+  24% { transform: rotate(-14deg); }
+  36% { transform: rotate(11deg); }
+  48% { transform: rotate(-8deg); }
+  60% { transform: rotate(5deg); }
+  72% { transform: rotate(-3deg); }
+  84% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Gentle ambient swing for when unhandled alerts exist */
+@keyframes ambientRing {
+  0%, 78%, 100% { transform: rotate(0deg); }
+  82% { transform: rotate(15deg); }
+  86% { transform: rotate(-12deg); }
+  90% { transform: rotate(8deg); }
+  94% { transform: rotate(-4deg); }
+}
+
+.sidebar-notification-bell-icon.ringing,
+.sidebar-notification-button:hover .sidebar-notification-bell-icon {
+  animation: ringBell 0.75s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.sidebar-notification-button.has-alerts:not(:hover) .sidebar-notification-bell-icon:not(.ringing) {
+  animation: ambientRing 4.2s ease-in-out infinite;
+}
+
+/* Subtle ring pulse ring behind the bell icon */
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.sidebar-notification-ring-pulse {
+  position: absolute;
+  inset: -1px;
+  border-radius: 9px;
+  background: var(--danger);
+  animation: ringPulse 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sidebar-notification-btn-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.sidebar-notification-button.active .sidebar-notification-btn-label {
+  color: var(--primary);
+}
+
+.sidebar-notification-btn-aside {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.sidebar-notification-count {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.45);
+}
+
+.sidebar-notification-count-pulse {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: var(--danger);
+  animation: ringPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.sidebar-notification-calm-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--border-card);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sidebar-notification-chevron {
+  color: var(--text-muted);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  flex: none;
+}
+
+.sidebar-notification-chevron.open {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+/* ── Pop out entrance animation ── */
+@keyframes notificationPopOut {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.93);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sidebar-notification-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: 304px;
+  max-width: calc(100vw - 28px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: visible;
+  z-index: 120;
+  transform-origin: bottom right;
+  animation: notificationPopOut 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Popover anchor caret */
+.sidebar-notification-popover::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 22px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-card);
+  border-bottom: 1px solid var(--border-card);
+  transform: rotate(45deg);
+  z-index: 1;
+}
+
+.sidebar-notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.sidebar-notification-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-notification-header-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--danger-tint);
+  color: var(--danger-text);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.sidebar-notification-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.sidebar-notification-action {
+  border: 1px solid var(--border-input);
+  background: var(--bg-card-alt);
+  color: var(--primary);
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.sidebar-notification-action:hover {
+  background: var(--primary-tint);
+  border-color: var(--primary);
+}
+
+.sidebar-notification-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 8px;
+}
+
+.sidebar-notification-item {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.sidebar-notification-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sidebar-notification-dot-warning {
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.sidebar-notification-dot-danger {
+  background: var(--danger);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+.sidebar-notification-footer {
+  padding: 10px 14px 14px;
+}
+
+.sidebar-notification-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.sidebar-notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-notification-row-link {
+  text-decoration: none;
+  display: block;
+  border-radius: 9px;
+  outline: none;
+}
+
+.sidebar-notification-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: rgba(52, 99, 214, 0.04);
+  border: 1px solid rgba(52, 99, 214, 0.12);
+  font-size: 11.5px;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.sidebar-notification-row-link:hover .sidebar-notification-row,
+.sidebar-notification-row-link:focus-visible .sidebar-notification-row {
+  background: var(--primary-tint);
+  border-color: var(--primary);
+  transform: translateX(-2px);
+}
+
+.sidebar-notification-vname {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sidebar-notification-dname {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.sidebar-notification-more-link {
+  display: block;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 8px 0 2px;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-notification-more-link:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+.sidebar-notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 12px 0 6px;
+}
+
+.sidebar-notification-empty-icon {
+  color: var(--success);
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-notification-popover {
+    animation: none !important;
+    transition: opacity 0.15s ease !important;
+  }
+  .sidebar-notification-bell-icon,
+  .sidebar-notification-bell-icon.ringing,
+  .sidebar-notification-button.has-alerts .sidebar-notification-bell-icon {
+    animation: none !important;
+  }
+  .sidebar-notification-ring-pulse,
+  .sidebar-notification-count-pulse {
+    animation: none !important;
+  }
+}
+
+.sidebar-notification-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.sidebar-notification-modal {
+  width: min(440px, calc(100vw - 24px));
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.sidebar-notification-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.sidebar-notification-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.sidebar-notification-close {
+  border: 1px solid var(--border-card);
+  background: var(--bg-card-alt);
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sidebar-notification-modal-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebar-notification-modal-body p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sidebar-notification-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sidebar-notification-field input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  padding: 0 12px;
+  font: inherit;
+}
+
+.sidebar-notification-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sidebar-notification-preset {
+  border: 1px solid var(--border-card);
+  background: var(--bg-card-alt);
+  color: var(--text-primary);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sidebar-notification-preset.active {
+  border-color: var(--primary);
+  background: var(--primary-tint);
+  color: var(--primary);
+}
+
+.sidebar-notification-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-notification-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-card);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.sidebar-notification-row.danger {
+  background: var(--danger-tint);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.sidebar-notification-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border-card);
+  background: var(--bg-card-alt);
+}
+
+.sidebar-footer {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: none;
+}
+
+.sidebar-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 11px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+}
+
+.sidebar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary-tint);
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.sidebar-profile-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-profile-name {
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-profile-role {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sidebar-theme-btn,
+.sidebar-logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 5px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex: none;
+}
+
+.sidebar-theme-btn:hover {
+  background: var(--primary-tint);
+  color: var(--primary);
+}
+
+.sidebar-logout-btn:hover {
+  background: var(--danger-tint);
+  color: var(--danger);
+}
+
+/* Mobile Toggle */
+.sidebar-mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(52, 99, 214, 0.4);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 99;
+}
+
+@media (max-width: 900px) {
+  .sidebar-mobile-toggle {
+    display: flex;
+  }
+  .sidebar-backdrop {
+    display: block;
+  }
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    transform: translateX(100%);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}

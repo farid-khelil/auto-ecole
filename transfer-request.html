@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>طلب تحويل ملف رخصة السياقة</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #e9e9e9; }
+
+  /* ---------- Final printed form only ---------- */
+
+  /* ---------- Page (designed on the scan's 920 x 1301 grid, scaled to A4) ---------- */
+  .page {
+    --u: calc(210mm / 920);
+    width: 210mm; height: 297mm; margin: 0 auto 12px; background: #fff;
+    position: relative; overflow: hidden; direction: rtl; color: #000;
+    font-family: Arial, Tahoma, "Noto Sans Arabic", sans-serif;
+    font-size: calc(var(--u) * 17);
+  }
+  .ln { position: absolute; white-space: nowrap; transform: translateY(-50%); line-height: 1.2; }
+  .r  { right: calc(var(--u) * 120); }                       /* right margin edge */
+  .c  { transform: translate(50%, -50%); }                   /* centred on its "right" value */
+  .b  { font-weight: bold; }
+  .lbl { font-size: calc(var(--u) * 16); }
+  .big { font-weight: bold; font-size: calc(var(--u) * 22); }
+
+  /* Final static values */
+  .v { unicode-bidi: isolate; }
+  .blank { display: inline-block; min-width: calc(var(--u) * 90); }
+
+  @media print {
+    html, body { background: #fff; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="ln c" style="top:calc(var(--u)*92); right:calc(var(--u)*453); font-size:calc(var(--u)*27); font-weight:normal;">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+
+  <div class="ln r b" style="top:calc(var(--u)*147)">وزارة الداخلية والجماعات المحلية والتهيئة العمرانية</div>
+  <div class="ln r b" style="top:calc(var(--u)*186)">المندوبية الوطنية للأمن عبر الطرق</div>
+  <div class="ln r b" style="top:calc(var(--u)*229)">المندوبية الولائية للأمن في الطرق لولاية المدية</div>
+
+  <div class="ln b" style="top:calc(var(--u)*229); right:calc(var(--u)*583)">المدية في : <span class="v" contenteditable data-f="date" data-ph="التاريخ"></span>&nbsp;</div>
+
+  <div class="ln r b" style="top:calc(var(--u)*272)">رقم :</div>
+  <div class="ln b" style="top:calc(var(--u)*272); right:calc(var(--u)*258)"><span class="v" contenteditable data-f="serial">02</span>&nbsp;/ م.و.أ.ط/&nbsp;<span class="v" contenteditable data-f="year">2026</span></div>
+
+  <div class="ln c b" style="top:calc(var(--u)*358); right:calc(var(--u)*453)">إلى السيد المندوب الولائي للأمن في الطرق لولاية المدية.</div>
+
+  <div class="ln r b" style="top:calc(var(--u)*440)">الموضوع : طلب تحويل ملف رخصة السياقة ( داخل إقليم الولاية ).</div>
+
+  <div class="ln r lbl" style="top:calc(var(--u)*489)">اللقب : <span class="big v" contenteditable data-f="lname" style="margin-right:calc(var(--u)*38)">بوعيشة</span></div>
+  <div class="ln r lbl" style="top:calc(var(--u)*540)">الإسم : <span class="big v" contenteditable data-f="fname" style="margin-right:calc(var(--u)*38)">أنيس</span></div>
+
+  <div class="ln r lbl" style="top:calc(var(--u)*590)">تاريخ ومكان الميلاد : <span class="v" contenteditable data-f="birth" style="font-weight:bold; font-size:calc(var(--u)*24); margin-right:calc(var(--u)*6)">2004/06/01</span></div>
+
+  <div class="ln r" style="top:calc(var(--u)*643); right:calc(var(--u)*125)">يشرفني أن أطلب منكم تحويل ملفي الخاص بالحصول على رخصة السياقة المسجل تحت الرقم <span class="v blank" contenteditable data-f="licno" data-ph="رقم الرخصة"></span></div>
+
+  <div class="ln r" style="top:calc(var(--u)*691); right:calc(var(--u)*125)">من مدرسة تعليم السياقة <span class="big v" contenteditable data-f="from" style="margin:0 calc(var(--u)*14)">بوطيبة محمد</span> &nbsp;&nbsp;إلى مدرسة تعليم السياقة <span class="big v" contenteditable data-f="to" style="margin:0 calc(var(--u)*14)">دروش سعيد</span></div>
+
+  <div class="ln r" style="top:calc(var(--u)*740); text-decoration:underline">أسباب التحويل :</div>
+  <div class="ln" style="top:calc(var(--u)*781); right:calc(var(--u)*150)">&#10070; <span class="v" contenteditable data-f="reason">قرب المدرسة الثانية من مقر الإقامة .</span></div>
+
+  <div class="ln c" style="top:calc(var(--u)*869); right:calc(var(--u)*232)">ختم المدرسة المحول منها</div>
+  <div class="ln c" style="top:calc(var(--u)*871); right:calc(var(--u)*647)">ختم المدرسة المحول إليها</div>
+
+  <div class="ln c" style="top:calc(var(--u)*957); right:calc(var(--u)*430)">إمضاء المعني ( ة ) بالأمر</div>
+  <div class="ln c" style="top:calc(var(--u)*1087); right:calc(var(--u)*423)">رأي وإمضاء مسؤول الإدارة</div>
+
+</div>
+
+</body>
+</html>

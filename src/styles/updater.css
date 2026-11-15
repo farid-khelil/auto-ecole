@@ -1,0 +1,429 @@
+/* ═══════════════════════════════════════════════════════════════════
+   UPDATER BUTTON & MODAL STYLING
+   ═══════════════════════════════════════════════════════════════════ */
+
+.updater-sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-card, #262831);
+  background: var(--bg-card, #1d1e25);
+  color: var(--text-primary, #e8e9ef);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.updater-sidebar-btn:hover {
+  background: var(--bg-hover, #23252e);
+  border-color: #383b47;
+  color: #ffffff;
+}
+
+.updater-sidebar-btn.has-update {
+  border-color: rgba(52, 99, 214, 0.4);
+  background: rgba(52, 99, 214, 0.1);
+}
+
+.updater-sidebar-btn-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(52, 99, 214, 0.16);
+  color: #5b8cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.updater-sidebar-btn-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.updater-btn-label {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.updater-btn-version {
+  font-size: 11px;
+  color: var(--text-muted, #7f8192);
+  margin-top: 2px;
+}
+
+.updater-badge-available {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #3463d6;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.updater-badge-check {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted, #9a9cab);
+  white-space: nowrap;
+}
+
+/* Compact Button */
+.updater-compact-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-card, #262831);
+  background: var(--bg-card, #1d1e25);
+  color: var(--text-secondary, #9a9cab);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.updater-compact-btn:hover {
+  background: var(--bg-hover, #23252e);
+  color: #ffffff;
+  border-color: #383b47;
+}
+
+.updater-pulse-dot {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3463d6;
+  box-shadow: 0 0 0 2px #1d1e25;
+}
+
+/* Modal Overlay & Dialog */
+.updater-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  direction: rtl;
+}
+
+.updater-modal-dialog {
+  width: 100%;
+  max-width: 480px;
+  background: #1d1e25;
+  border: 1px solid #292a33;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #e8e9ef;
+  font-family: inherit;
+  animation: updaterModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes updaterModalFadeIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.updater-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.updater-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.updater-modal-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(52, 99, 214, 0.16);
+  color: #5b8cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.updater-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.updater-modal-subtitle {
+  font-size: 12px;
+  color: #9a9cab;
+  margin-top: 2px;
+}
+
+.updater-btn-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: #9a9cab;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.updater-btn-close:hover {
+  background: #262831;
+  color: #ffffff;
+}
+
+/* Modal Body */
+.updater-modal-body {
+  padding: 8px 0;
+}
+
+.updater-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: #17181d;
+  border: 1px solid #262831;
+  gap: 8px;
+}
+
+.updater-state-box.available {
+  background: rgba(52, 99, 214, 0.08);
+  border-color: rgba(52, 99, 214, 0.25);
+}
+
+.updater-state-box.success {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.updater-success-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+  font-size: 20px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.updater-state-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.updater-state-sub {
+  font-size: 13px;
+  color: #9a9cab;
+  line-height: 1.4;
+}
+
+.updater-badge-pill.new {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #3463d6;
+  color: #ffffff;
+}
+
+.updater-new-version {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+.updater-release-notes {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #1d1e25;
+  border: 1px solid #292a33;
+  text-align: right;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 12.5px;
+  color: #c9cbd6;
+}
+
+.updater-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #262831;
+  border-top-color: #3463d6;
+  border-radius: 50%;
+  animation: updaterSpin 0.75s linear infinite;
+  margin-bottom: 6px;
+}
+
+@keyframes updaterSpin {
+  to { transform: rotate(360deg); }
+}
+
+.updater-progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #2a2c36;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.updater-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: #3463d6;
+  transition: width 0.2s ease;
+}
+
+/* Info & Dev Cards */
+.updater-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #17181d;
+  border: 1px solid #262831;
+}
+
+.updater-card.dev {
+  background: rgba(245, 154, 61, 0.08);
+  border-color: rgba(245, 154, 61, 0.25);
+}
+
+.updater-card.error {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.updater-card.info {
+  background: rgba(52, 99, 214, 0.08);
+  border-color: rgba(52, 99, 214, 0.25);
+}
+
+.updater-card-icon {
+  font-size: 20px;
+  flex: none;
+}
+
+.updater-card-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.updater-card-desc {
+  font-size: 12.5px;
+  color: #9a9cab;
+  line-height: 1.45;
+}
+
+.updater-card-desc code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* Modal Footer */
+.updater-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #262831;
+  padding-top: 14px;
+}
+
+.updater-btn-secondary {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid #2a2c36;
+  background: transparent;
+  color: #c9cbd6;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.updater-btn-secondary:hover {
+  background: #262831;
+  color: #ffffff;
+}
+
+.updater-btn-primary {
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: 0;
+  background: #3463d6;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.updater-btn-primary:hover:not(:disabled) {
+  background: #2b55be;
+}
+
+.updater-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.updater-btn-primary.success {
+  background: #22c55e;
+}
+
+.updater-btn-primary.success:hover {
+  background: #16a34a;
+}
