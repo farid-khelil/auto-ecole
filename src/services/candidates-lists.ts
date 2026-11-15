@@ -179,7 +179,7 @@ export const candidatesListService = {
  * Calculates the "تاريخ آخر امتحان" (date of last exam) for a candidate:
  * - If the candidate has previously taken an exam (from attendance or previous lists),
  *   returns the latest prior exam date.
- * - If it is their first exam, returns the current list's examDate.
+ * - If it is their first exam, returns an empty string ("").
  */
 export function getCandidateLastExamDate(
   candidate: Client,
@@ -224,8 +224,11 @@ export function getCandidateLastExamDate(
 
   // 3. Filter for strictly prior exam dates (before current list exam date)
   const priorExamDates = candidateExamDates.filter((dateStr) => {
-    if (!currentExamDate) return true;
-    return dateStr < currentExamDate;
+    if (currentExamDate) {
+      return dateStr < currentExamDate;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    return dateStr <= today;
   });
 
   priorExamDates.sort((a, b) => b.localeCompare(a));
@@ -234,7 +237,7 @@ export function getCandidateLastExamDate(
     return priorExamDates[0];
   }
 
-  return currentExamDate || "";
+  return "";
 }
 
 /**

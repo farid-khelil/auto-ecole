@@ -5,231 +5,301 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</title>
 <style>
-  /*
-    The sheet is drawn at the SAME size and proportions as the scanned image
-    (1568 x 2328 units). Every element sits at the exact position it has in the image.
-    The whole sheet is then scaled uniformly (screen: fit window, print: fit A4).
-  */
   @page { size: A4 portrait; margin: 0; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  :root { --s: 0.5; }
-  body {
-    background: #e9e9e9;
-    font-family: "Traditional Arabic", "Simplified Arabic", "Arabic Typesetting", "Noto Naskh Arabic", Arial, Tahoma, sans-serif;
-    font-weight: 700;
-    color: #000;
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  :root { --fit: 1; }
+  html, body {
+    margin: 0;
+    padding: 16px 0;
+    background: #2e3235;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    direction: rtl;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap {
-    width: calc(1568px * var(--s));
-    height: calc(2328px * var(--s));
-    margin: 10px auto;
+
+  /* ---------- Page (A4) ---------- */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    height: 297mm;
+    margin: 0 auto;
     background: #fff;
     position: relative;
     overflow: hidden;
-  }
-  .page {
-    position: absolute;
-    top: 0; left: 0;
-    width: 1568px;
-    height: 2328px;
-    transform: scale(var(--s));
-    transform-origin: top left;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    transform-origin: top center;
+    transform: scale(var(--fit));
+    font-family: "Traditional Arabic", "Simplified Arabic", "Arabic Typesetting", "Amiri", "Noto Naskh Arabic", "Times New Roman", serif;
+    font-weight: 700;
+    color: #000;
     direction: rtl;
+    padding: 13mm 16mm 10mm 16mm;
+    box-sizing: border-box;
   }
-  .t { position: absolute; transform: translateY(-50%); white-space: nowrap; line-height: 1.2; }
-  .r { right: 63px; }                 /* right text edge = x 1505 in the image */
-  .c { left: 0; right: 0; text-align: center; }
-  .u { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 8px; }
 
-  .republic { top: 95px; font-size: 39px; }
-  .m { font-size: 30px; }
-  .title { font-size: 40px; left: 0; right: 0; text-align: center; padding-right: 0; }
+  .u { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
 
-  /* fields */
-  .field {
-    position: absolute;
-    right: 63px;
-    left: 90px;
-    height: 50px;
-    transform: translateY(-50%);
+  /* ---------- Header ---------- */
+  .republic {
+    text-align: center;
+    font-size: 15pt;
+    margin: 0 0 3.5mm 0;
+    font-weight: bold;
+  }
+
+  .ministry {
+    text-align: right;
+    font-size: 11.5pt;
+    line-height: 1.6;
+    margin-bottom: 3.5mm;
+    font-weight: bold;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 15pt;
+    margin-bottom: 5mm;
+    font-weight: bold;
+  }
+  .title span {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  /* ---------- Candidate Fields ---------- */
+  .fields-section {
+    margin-bottom: 5mm;
+    font-size: 12.5pt;
+  }
+  .field-row {
     display: flex;
-    align-items: center;
-    font-size: 31px;
+    align-items: baseline;
+    height: 7mm;
+    line-height: 7mm;
   }
-  .field .label {
-    width: 600px;            /* label text x 935..1505, colon at x ~915 as in the image */
-    flex: none;
+  .field-label {
+    width: 88mm;
+    flex-shrink: 0;
     white-space: nowrap;
-    display: flex;
+    font-weight: bold;
   }
-  .field .txt { width: 570px; flex: none; text-align: right; }
-  .field .txt .in { display: inline-block; white-space: nowrap; }
-  .field .colon { width: 30px; flex: none; text-align: right; }
-  .field .val, .field input {
+  .colon {
+    width: 4mm;
+    flex-shrink: 0;
+    text-align: center;
+    font-weight: bold;
+  }
+  .field-value {
     flex: 1;
     min-width: 0;
-    border: none;
-    outline: none;
-    background: transparent;
-    font: inherit;
-    font-weight: 400;
-    color: #000;
-    padding: 0 16px;
-    direction: rtl;
-    line-height: 50px;
+    font-weight: bold;
+    padding-right: 3mm;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .field .val:focus, .field input:focus { background: #fffbd6; }
 
-  /* table lines */
-  .ln { position: absolute; background: #000; }
-  .h { height: 5px; } .v { width: 5px; }
-  .cell { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font-size: 27px; }
-  .dot { position: absolute; height: 0; border-bottom: 3px dotted #000; }
+  /* ---------- Assessment Table ---------- */
+  .eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    margin-bottom: 8mm;
+  }
+  .eval-table th, .eval-table td {
+    border: 1.5px solid #000;
+    vertical-align: middle;
+  }
+  .eval-table th {
+    height: 12mm;
+    font-size: 13.5pt;
+    font-weight: bold;
+    text-align: center;
+    background: transparent;
+  }
+  .th-eval { width: 55%; }
+  .th-notes { width: 45%; }
 
-  .sign { font-size: 29px; top: 1970px; }
+  .eval-table tbody tr {
+    height: 35mm;
+  }
+  .td-stage {
+    width: 25%;
+    text-align: center;
+    font-size: 13.5pt;
+    font-weight: bold;
+    padding: 0 4mm;
+  }
+  .td-dots-eval {
+    width: 30%;
+    padding: 2mm 5mm;
+  }
+  .td-dots-notes {
+    width: 45%;
+    padding: 2mm 5mm;
+  }
+  .dot-line {
+    height: 9.5mm;
+    border-bottom: 2px dotted #000;
+  }
+
+  /* ---------- Footer ---------- */
+  .footer-section {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13pt;
+    font-weight: bold;
+    padding: 0 16mm;
+    margin-top: 6mm;
+  }
+
+  @media print {
+    html, body {
+      background: #fff !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .page {
+      margin: 0 !important;
+      box-shadow: none !important;
+      transform: none !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      min-height: 297mm !important;
+      max-height: 297mm !important;
+      page-break-after: avoid !important;
+      page-break-inside: avoid !important;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="wrap" id="wrap">
+
 <div class="page">
+  <div class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</div>
 
-  <div class="t c republic">الجمهورية الجزائرية الديمقراطية الشعبية</div>
-
-  <div class="t r m" style="top:183px"><span class="u">وزارة الداخلية والجماعات المحلية والتهيئة العمرانية</span></div>
-  <div class="t r m" style="top:233px"><span class="u">المندوبية الوطنية للأمن في الطرق</span></div>
-  <div class="t r m" style="top:287px"><span class="u">المندوبية الولائية للأمن في الطرق</span></div>
-  <div class="t r m" style="top:340px"><span class="u">لـــــــــــــــــــولاية ـــــــــــالــــــــــــمــــــــدية</span></div>
-
-  <div class="t title" style="top:395px"><span class="u" style="text-underline-offset:10px">بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</span></div>
-
-  <div class="field" style="top:512px">
-    <div class="label"><span class="txt"><span class="in" data-t="الإس~م واللق~ب"></span></span><span class="colon">:</span></div>
-    <span class="val" contenteditable data-f="name">بن عيسى محمد أمين</span>
-  </div>
-  <div class="field" style="top:590px">
-    <div class="label"><span class="txt"><span class="in" data-t="تاري~خ ومك~ان المي~لاد"></span></span><span class="colon">:</span></div>
-    <span class="val" contenteditable data-f="birth">12/05/1998 - المدية</span>
-  </div>
-  <div class="field" style="top:660px">
-    <div class="label"><span class="txt"><span class="in" data-t="العن~وان"></span></span><span class="colon">:</span></div>
-    <span class="val" contenteditable data-f="address">حي 100 مسكن، المدية</span>
-  </div>
-  <div class="field" style="top:740px">
-    <div class="label"><span class="txt"><span class="in" data-t="تاريخ التسجيل لدى مدرسة تعليم السي~اقة"></span></span><span class="colon">:</span></div>
-    <span class="val" contenteditable data-f="regdate">03/09/2026</span>
-  </div>
-  <div class="field" style="top:820px">
-    <div class="label"><span class="txt"><span class="in" data-t="تاريخ إيداع الملف لدى مصالح المندوبية الولائية"></span></span><span class="colon">:</span></div>
-    <span class="val" contenteditable data-f="subdate">20/10/2026</span>
+  <div class="ministry">
+    <div><span class="u">وزارة الداخلية والجماعات المحلية والتهيئة العمرانية</span></div>
+    <div><span class="u">المندوبية الوطنية للأمن في الطرق</span></div>
+    <div><span class="u">المندوبية الولائية للأمن في الطرق</span></div>
+    <div><span class="u">لـــــــــــــــــــولاية ـــــــــــالمديةـــــــــــ</span></div>
   </div>
 
-  <!-- ===== table (outer 92..1518 x 880..1865) ===== -->
-  <div class="ln h" style="left:92px;top:878px;width:1429px"></div>
-  <div class="ln h" style="left:92px;top:1863px;width:1429px"></div>
-  <div class="ln v" style="left:92px;top:878px;height:990px"></div>
-  <div class="ln v" style="left:1516px;top:878px;height:990px"></div>
-  <div class="ln v" style="left:580px;top:878px;height:990px"></div>
-  <div class="ln v" style="left:1048px;top:1010px;height:858px"></div>
-  <div class="ln h" style="left:92px;top:1010px;width:1429px"></div>
-  <div class="ln h" style="left:92px;top:1293px;width:1429px"></div>
-  <div class="ln h" style="left:92px;top:1570px;width:1429px"></div>
+  <div class="title">
+    <span>بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</span>
+  </div>
 
-  <div class="cell" style="left:1050px;top:942px">بطــــــــاقـــــــة التقيــــــيــــم</div>
-  <div class="cell" style="left:340px;top:942px">ملاحظات الممتحن أثناء الإمتحان</div>
+  <div class="fields-section">
+    <div class="field-row">
+      <span class="field-label">الإســــم واللقــــب</span>
+      <span class="colon">:</span>
+      <span class="field-value" contenteditable data-f="name">بن عيسى محمد أمين</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">تاريــــخ ومكــــان الميــــلاد</span>
+      <span class="colon">:</span>
+      <span class="field-value" contenteditable data-f="birth">12/05/1998 - المدية</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">العنــــوان</span>
+      <span class="colon">:</span>
+      <span class="field-value" contenteditable data-f="address">حي 100 مسكن، المدية</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">تاريخ التسجيل لدى مدرسة تعليم السيــــاقة</span>
+      <span class="colon">:</span>
+      <span class="field-value" contenteditable data-f="regdate">03/09/2026</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">تاريخ إيداع الملف لدى مصالح المندوبية الولائية</span>
+      <span class="colon">:</span>
+      <span class="field-value" contenteditable data-f="subdate">20/10/2026</span>
+    </div>
+  </div>
 
-  <div class="cell" style="left:1284px;top:1152px">قانون المرور</div>
-  <div class="cell" style="left:1284px;top:1430px">المنـــــــاورات</div>
-  <div class="cell" style="left:1284px;top:1708px">السياقة العـــــــامة</div>
+  <table class="eval-table">
+    <thead>
+      <tr>
+        <th class="th-eval" colspan="2">بطــــــــاقـــــــة التقيــــــيــــم</th>
+        <th class="th-notes">ملاحظات الممتحن أثناء الإمتحان</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-stage">
+          <div class="stage-name">قانون المرور</div>
+        </td>
+        <td class="td-dots td-dots-eval">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+        <td class="td-dots td-dots-notes">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="td-stage">
+          <div class="stage-name">المنـــــــاورات</div>
+        </td>
+        <td class="td-dots td-dots-eval">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+        <td class="td-dots td-dots-notes">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="td-stage">
+          <div class="stage-name">السياقة العـــــــامة</div>
+        </td>
+        <td class="td-dots td-dots-eval">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+        <td class="td-dots td-dots-notes">
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+          <div class="dot-line"></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  <!-- dotted lines: evaluation column -->
-  <div class="dot" style="left:668px;top:1082px;width:365px"></div>
-  <div class="dot" style="left:668px;top:1160px;width:365px"></div>
-  <div class="dot" style="left:668px;top:1238px;width:365px"></div>
-  <div class="dot" style="left:668px;top:1362px;width:365px"></div>
-  <div class="dot" style="left:668px;top:1440px;width:365px"></div>
-  <div class="dot" style="left:668px;top:1518px;width:365px"></div>
-  <div class="dot" style="left:686px;top:1645px;width:347px"></div>
-  <div class="dot" style="left:686px;top:1722px;width:347px"></div>
-  <div class="dot" style="left:694px;top:1800px;width:339px"></div>
-  <!-- dotted lines: examiner notes column -->
-  <div class="dot" style="left:200px;top:1085px;width:368px"></div>
-  <div class="dot" style="left:200px;top:1163px;width:368px"></div>
-  <div class="dot" style="left:208px;top:1240px;width:360px"></div>
-  <div class="dot" style="left:200px;top:1365px;width:368px"></div>
-  <div class="dot" style="left:200px;top:1443px;width:368px"></div>
-  <div class="dot" style="left:208px;top:1520px;width:360px"></div>
-  <div class="dot" style="left:190px;top:1647px;width:365px"></div>
-  <div class="dot" style="left:196px;top:1725px;width:360px"></div>
-  <div class="dot" style="left:188px;top:1802px;width:365px"></div>
-
-  <div class="t sign" style="right:163px">إسم ولقب الممرن</div>
-  <div class="t sign" style="left:220px">ختم وإمضاء المدرسة</div>
-
-</div>
+  <div class="footer-section">
+    <div class="footer-trainer">إسم ولقب الممرن</div>
+    <div class="footer-school">ختم وإمضاء المدرسة</div>
+  </div>
 </div>
 
 <script>
-  // fit the sheet to the window on screen (print is handled in CSS)
-  function fit() {
-    var s = Math.min((window.innerWidth - 20) / 1568, (window.innerHeight - 20) / 2328, 1);
-    document.documentElement.style.setProperty('--s', Math.max(s, 0.2));
-  }
-  fit(); window.addEventListener('resize', fit);
-
-  // Stretch every field label so its text runs exactly from x 1505 to x 935 (like the image):
-  // kashida (tatweel) is added inside words, or word-spacing if the label has no kashida points.
-  function fitLabels() {
-    var TARGET = 570, BASE = 31, T = '\u0640';
-    document.querySelectorAll('.field .in').forEach(function (el) {
-      var parts = el.getAttribute('data-t').split('~');
-      var counts = parts.slice(1).map(function () { return 0; });
-      function build() {
-        var s = parts[0];
-        for (var i = 1; i < parts.length; i++) {
-          s += new Array(counts[i - 1] + 1).join(T) + parts[i];
-        }
-        el.textContent = s;
-      }
-      var size = BASE;
-      el.style.fontSize = size + 'px';
-      el.style.wordSpacing = '0px';
-      build();
-      while (el.offsetWidth > TARGET && size > 16) {
-        size -= 0.5; el.style.fontSize = size + 'px';
-      }
-      if (counts.length) {
-        var k = 0, guard = 0;
-        while (guard++ < 200) {
-          counts[k % counts.length]++; build();
-          if (el.offsetWidth > TARGET) { counts[k % counts.length]--; build(); break; }
-          k++;
-        }
-      }
-      var gap = TARGET - el.offsetWidth;
-      var words = el.textContent.split(' ').length - 1;
-      if (gap > 0 && words > 0) el.style.wordSpacing = (gap / words) + 'px';
-    });
-  }
-  fitLabels();
-  window.addEventListener('load', fitLabels);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLabels);
-  document.addEventListener('input', function (e) {
-    if (e.target && e.target.tagName === 'INPUT') {
-      e.target.setAttribute('value', e.target.value);
+(function(){
+  function fit(){
+    var w = document.documentElement.clientWidth - 20;
+    var pw = 210 * 3.7795275591;
+    if (w < pw) {
+      document.documentElement.style.setProperty("--fit", (w / pw).toFixed(3));
+    } else {
+      document.documentElement.style.setProperty("--fit", "1");
     }
-  });
-</script>
-<style>
-  @media print {
-    html, body { background: #fff; }
-    /* same proportions as the image, scaled uniformly to fit one A4 sheet (297 mm tall) */
-    :root { --s: 0.4806 !important; }
-    .wrap { margin: 0 auto; }
-    .field .val:focus, .field input:focus { background: transparent; }
   }
-</style>
+  fit();
+  window.addEventListener("resize", fit);
+  window.addEventListener("beforeprint", function(){ document.documentElement.style.setProperty("--fit", "1"); });
+  window.addEventListener("afterprint", fit);
+})();
+</script>
+
 </body>
 </html>

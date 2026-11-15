@@ -826,7 +826,7 @@ export default function CalendarPage() {
                     className="cal-form-input"
                     value={comFormTitle}
                     onChange={(e) => setComFormTitle(e.target.value)}
-                    placeholder="مثال: حصة قانون المرور الأسبوعية (الأحد 09:00)"
+                    placeholder="عنوان الحصة"
                     required
                   />
                 </div>
@@ -880,7 +880,7 @@ export default function CalendarPage() {
                       className="cal-form-input"
                       value={comFormLocation}
                       onChange={(e) => setComFormLocation(e.target.value)}
-                      placeholder="مثال: قاعة الدروس النظرية"
+                      placeholder="مكان التدريب"
                     />
                   </div>
                 </div>
@@ -892,7 +892,7 @@ export default function CalendarPage() {
                     rows={2}
                     value={comFormNotes}
                     onChange={(e) => setComFormNotes(e.target.value)}
-                    placeholder="ملاحظات حول موضوع الدرس أو الفئة المستهدفة..."
+                    placeholder="ملاحظات إضافية"
                   />
                 </div>
               </div>

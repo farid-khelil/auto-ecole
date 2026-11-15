@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { clientService, type Client } from '../services/clients';
@@ -35,6 +35,34 @@ function getInitials(name?: string) {
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
 }
 
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function hasMissingResults(list: CandidatesListRecord) {
+  if (!list.candidates || list.candidates.length === 0) return false;
+  const results = list.results || {};
+  return list.candidates.some((c) => !results[String(c.id)]);
+}
+
+function playBellChime() {
+  try {
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+    [1046.5, 1318.5, 1568].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.12, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.6);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.6);
+    });
+  } catch { /* audio not available */ }
+}
+
 export default function PaymentsPage() {
   const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
@@ -43,8 +71,13 @@ export default function PaymentsPage() {
 
   // Notifications State
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifTab, setNotifTab] = useState<'all' | 'vehicles' | 'exams' | 'payments'>('all');
+  const [isRinging, setIsRinging] = useState(false);
   const [alertDays, setAlertDays] = useState(() => vehicleService.getAlertDays());
   const [vehicleSummary, setVehicleSummary] = useState(() => vehicleService.getSummary());
+  const [showTimerModal, setShowTimerModal] = useState(false);
+  const [timerDaysInput, setTimerDaysInput] = useState(String(alertDays));
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   // Record Payment Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,6 +109,91 @@ export default function PaymentsPage() {
       return () => clearTimeout(t);
     }
   }, [toast]);
+
+  // Click outside to close notification popout
+  useEffect(() => {
+    if (!isNotifOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+        setIsNotifOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isNotifOpen]);
+
+  // Escape key to close
+  useEffect(() => {
+    if (!isNotifOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsNotifOpen(false);
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isNotifOpen]);
+
+  const handleToggleNotification = useCallback(() => {
+    setIsNotifOpen((prev) => {
+      if (!prev) {
+        playBellChime();
+        setIsRinging(true);
+        setTimeout(() => setIsRinging(false), 800);
+      }
+      return !prev;
+    });
+  }, []);
+
+  // Overdue exam results
+  const overdueResultsLists = useMemo(() => {
+    const today = todayKey();
+    return candidateLists.filter((list) => Boolean(list.examDate && list.examDate < today && hasMissingResults(list)));
+  }, [candidateLists]);
+
+  // Vehicle alert items
+  const vehicleAlertItems = useMemo(() => {
+    return vehicleService.list().flatMap((vehicle) =>
+      vehicle.documents
+        .filter((document) => {
+          const status = calculateDocumentStatus(document.expiryDate, alertDays);
+          return status.status === 'expired' || status.status === 'expiring_soon';
+        })
+        .map((document) => ({
+          vehicleId: vehicle.id,
+          documentId: document.id,
+          vehicleName: vehicle.name,
+          documentName: document.name,
+          expiryDate: document.expiryDate,
+          status: calculateDocumentStatus(document.expiryDate, alertDays),
+        }))
+    );
+  }, [alertDays, vehicleSummary]);
+
+  // Pending payments watchlist
+  const pendingWatchlist = useMemo(() => {
+    return clients
+      .filter((c) => {
+        const tot = Number(c.totalAmount ?? 35000);
+        const paid = Number(c.paidAmount ?? 0);
+        return paid < tot && paid > 0;
+      })
+      .sort((a, b) => {
+        const remA = Math.max(0, Number(a.totalAmount ?? 35000) - Number(a.paidAmount ?? 0));
+        const remB = Math.max(0, Number(b.totalAmount ?? 35000) - Number(b.paidAmount ?? 0));
+        return remB - remA;
+      })
+      .slice(0, 8);
+  }, [clients]);
+
+  const totalAlerts = vehicleAlertItems.length + overdueResultsLists.length;
+
+  const handleSaveAlertDays = () => {
+    const days = parseInt(timerDaysInput, 10);
+    if (!isNaN(days) && days >= 1 && days <= 365) {
+      vehicleService.setAlertDays(days);
+      setAlertDays(days);
+      setShowTimerModal(false);
+    }
+  };
 
   // Financial Stats
   const stats = useMemo(() => {
@@ -489,40 +607,182 @@ export default function PaymentsPage() {
                 تسجيل دفعة جديدة
               </button>
 
-              <UpdateButton compact />
-
-              <div className="dashboard-notif-wrap">
+              <div className="payments-notification-wrap" ref={notificationRef}>
                 <button
                   type="button"
-                  className={`btn-ghost-notif ${fleetInfo.topAlert ? 'has-alerts' : ''}`}
-                  onClick={() => setIsNotifOpen((p) => !p)}
+                  className={`payments-notification-btn ${isNotifOpen ? 'active' : ''} ${totalAlerts > 0 ? 'has-alerts' : ''} ${isRinging ? 'ringing' : ''}`}
+                  onClick={handleToggleNotification}
                   title="مركز الإشعارات والتنبيهات"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="payments-bell-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                   </svg>
-                  {fleetInfo.topAlert && <span className="notif-badge-dot" />}
+                  {totalAlerts > 0 && (
+                    <span className="payments-notif-badge">{totalAlerts}</span>
+                  )}
+                  {totalAlerts > 0 && <span className="payments-bell-ring-aura" />}
                 </button>
 
                 {isNotifOpen && (
-                  <div className="notif-popover">
-                    <div className="notif-popover-head">
-                      <div className="notif-popover-title">التنبيهات السريعة</div>
-                      <button type="button" className="btn-modal-close" onClick={() => setIsNotifOpen(false)}>✕</button>
+                  <div className="payments-notification-popout">
+                    <div className="payments-notification-header">
+                      <div className="payments-notification-header-row">
+                        <h3 className="payments-notification-title">مركز الإشعارات</h3>
+                        <button type="button" className="payments-notification-close" onClick={() => setIsNotifOpen(false)}>✕</button>
+                      </div>
+                      <button
+                        type="button"
+                        className="payments-notification-settings-btn"
+                        onClick={() => { setTimerDaysInput(String(alertDays)); setShowTimerModal(true); }}
+                      >
+                        ⚙️ إعداد المنبه
+                      </button>
                     </div>
-                    <div className="notif-popover-list">
-                      {fleetInfo.topAlert ? (
-                        <div className="notif-popover-item" onClick={() => { navigate('/vehicles'); setIsNotifOpen(false); }}>
-                          <span style={{ color: '#ffc78a', fontSize: '16px' }}>⚠️</span>
-                          <div>
-                            <div style={{ fontWeight: 700, fontSize: '13px', color: '#ffffff' }}>{fleetInfo.topAlert.vehicleName}</div>
-                            <div style={{ fontSize: '12px', color: '#9a9cab' }}>{fleetInfo.topAlert.docName} (متبقي {fleetInfo.topAlert.daysRemaining} يوم)</div>
+
+                    {/* Filter Tabs */}
+                    <div className="payments-notif-tabs" role="tablist">
+                      <button
+                        type="button"
+                        className={`payments-notif-tab ${notifTab === 'all' ? 'active' : ''}`}
+                        onClick={() => setNotifTab('all')}
+                      >
+                        الكل ({totalAlerts + pendingWatchlist.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`payments-notif-tab ${notifTab === 'vehicles' ? 'active' : ''}`}
+                        onClick={() => setNotifTab('vehicles')}
+                      >
+                        المركبات ({vehicleAlertItems.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`payments-notif-tab ${notifTab === 'exams' ? 'active' : ''}`}
+                        onClick={() => setNotifTab('exams')}
+                      >
+                        نتائج متأخرة ({overdueResultsLists.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`payments-notif-tab ${notifTab === 'payments' ? 'active' : ''}`}
+                        onClick={() => setNotifTab('payments')}
+                      >
+                        المستحقات ({pendingWatchlist.length})
+                      </button>
+                    </div>
+
+                    {/* Popover Content */}
+                    <div className="payments-notification-body">
+                      {/* Vehicles Section */}
+                      {(notifTab === 'all' || notifTab === 'vehicles') && vehicleAlertItems.length > 0 && (
+                        <div className="payments-notif-section">
+                          <div className="payments-notif-section-head">
+                            <span className="payments-notif-section-icon">🚗</span>
+                            <span>تنبيهات المركبات ({vehicleAlertItems.length})</span>
+                          </div>
+                          <div className="payments-notif-cards">
+                            {vehicleAlertItems.slice(0, notifTab === 'all' ? 3 : 8).map((item) => (
+                              <div
+                                key={`${item.vehicleId}-${item.documentId}`}
+                                className={`payments-notif-card ${item.status.status === 'expired' ? 'is-danger' : 'is-warning'}`}
+                                onClick={() => { navigate('/vehicles'); setIsNotifOpen(false); }}
+                              >
+                                <div className="payments-notif-card-title">{item.vehicleName}</div>
+                                <div className="payments-notif-card-sub">
+                                  {item.documentName} · {item.status.status === 'expired' ? 'منتهي' : `متبقي ${item.status.daysRemaining} يوم`}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ) : (
-                        <div style={{ fontSize: '13px', color: '#9a9cab', textAlign: 'center', padding: '16px 0' }}>لا توجد تنبيهات عاجلة حالياً</div>
                       )}
+
+                      {/* Overdue Results Section */}
+                      {(notifTab === 'all' || notifTab === 'exams') && overdueResultsLists.length > 0 && (
+                        <div className="payments-notif-section">
+                          <div className="payments-notif-section-head">
+                            <span className="payments-notif-section-icon">📋</span>
+                            <span>نتائج امتحانات متأخرة ({overdueResultsLists.length})</span>
+                          </div>
+                          <div className="payments-notif-cards">
+                            {overdueResultsLists.slice(0, notifTab === 'all' ? 3 : 8).map((list) => (
+                              <div
+                                key={list.id}
+                                className="payments-notif-card is-warning"
+                                onClick={() => { navigate(`/candidates-lists/${list.id}`); setIsNotifOpen(false); }}
+                              >
+                                <div className="payments-notif-card-title">
+                                  {list.transmittalNumber ? `إرسال رقم ${list.transmittalNumber}` : 'قائمة امتحان'}
+                                </div>
+                                <div className="payments-notif-card-sub">
+                                  تاريخ الامتحان: {list.examDate} · {list.candidates?.length || 0} مترشح
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Pending Payments Section */}
+                      {(notifTab === 'all' || notifTab === 'payments') && pendingWatchlist.length > 0 && (
+                        <div className="payments-notif-section">
+                          <div className="payments-notif-section-head">
+                            <span className="payments-notif-section-icon">💰</span>
+                            <span>مستحقات معلقة ({pendingWatchlist.length})</span>
+                          </div>
+                          <div className="payments-notif-cards">
+                            {pendingWatchlist.slice(0, notifTab === 'all' ? 3 : 8).map((c) => (
+                              <div
+                                key={c.id}
+                                className="payments-notif-card is-amber"
+                                onClick={() => { handleOpenPaymentModal(c.id); setIsNotifOpen(false); }}
+                              >
+                                <div className="payments-notif-card-title">{c.name}</div>
+                                <div className="payments-notif-card-sub">
+                                  متبقي {formatCurrency(Math.max(0, Number(c.totalAmount ?? 35000) - Number(c.paidAmount ?? 0)))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Empty State */}
+                      {((notifTab === 'all' && totalAlerts === 0 && pendingWatchlist.length === 0) ||
+                        (notifTab === 'vehicles' && vehicleAlertItems.length === 0) ||
+                        (notifTab === 'exams' && overdueResultsLists.length === 0) ||
+                        (notifTab === 'payments' && pendingWatchlist.length === 0)) && (
+                        <div className="payments-notif-empty">
+                          <span>✅</span>
+                          <span>لا توجد تنبيهات في هذا القسم</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Timer Settings Modal */}
+                {showTimerModal && (
+                  <div className="payments-timer-modal-overlay" onClick={() => setShowTimerModal(false)}>
+                    <div className="payments-timer-modal" onClick={(e) => e.stopPropagation()}>
+                      <h3>إعداد فترة التنبيه</h3>
+                      <p>عدد الأيام قبل انتهاء صلاحية الوثائق للتنبيه:</p>
+                      <div className="payments-timer-input-row">
+                        <input
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={timerDaysInput}
+                          onChange={(e) => setTimerDaysInput(e.target.value)}
+                          className="payments-timer-input"
+                        />
+                        <span>يوم</span>
+                      </div>
+                      <div className="payments-timer-actions">
+                        <button type="button" className="btn-timer-save" onClick={handleSaveAlertDays}>حفظ</button>
+                        <button type="button" className="btn-timer-cancel" onClick={() => setShowTimerModal(false)}>إلغاء</button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1095,7 +1355,7 @@ export default function PaymentsPage() {
                   required
                   value={paymentAmountInput}
                   onChange={(e) => setPaymentAmountInput(e.target.value)}
-                  placeholder="مثال: 15000"
+                  placeholder="المبلغ"
                   className="modal-input"
                   style={{ fontSize: '16px', fontWeight: 700 }}
                 />
@@ -1108,7 +1368,7 @@ export default function PaymentsPage() {
                   type="text"
                   value={paymentNote}
                   onChange={(e) => setPaymentNote(e.target.value)}
-                  placeholder="مثال: وصل دفعة رقم 102، شطر أول..."
+                  placeholder="ملاحظات الدفع"
                   className="modal-input"
                 />
               </div>

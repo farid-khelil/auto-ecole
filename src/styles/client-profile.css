@@ -379,7 +379,9 @@
 }
 
 .document-row.in-progress {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(244, 239, 255, 0.28));
+  background: var(--bg-card-alt);
+  border-color: var(--border-card);
+  color: var(--text-secondary);
 }
 
 .document-row.interactive {
@@ -397,7 +399,7 @@
   border-color: var(--primary-border);
   color: var(--text-primary);
   font-weight: 700;
-  box-shadow: 0 10px 22px -18px rgba(95, 74, 180, 0.8);
+  box-shadow: none;
 }
 
 .document-content {
@@ -427,47 +429,25 @@
   transition: all 0.22s ease;
 }
 
-.document-row.in-progress .document-state-badge {
-  background: #fff3d8;
-  color: #a35d00;
-}
-
-.document-row.done .document-state-badge {
-  background: #dff8ea;
-  color: #1f7d54;
-}
-
 .document-status {
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--border-input);
-  color: transparent;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
   flex: none;
+  background: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-tint);
   transition: all 0.22s ease;
-  background: rgba(255, 255, 255, 0.04);
 }
 
 .document-status svg {
-  opacity: 0;
-  transform: scale(0.7);
-  transition: all 0.22s ease;
+  display: none;
 }
 
 .document-row.done .document-status {
   background: var(--primary);
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(111, 88, 213, 0.12);
-  animation: task-complete-pulse 0.35s ease;
-}
-
-.document-row.done .document-status svg {
-  opacity: 1;
-  transform: scale(1);
-  color: #fff;
+  box-shadow: 0 0 0 3px var(--primary-tint);
+  animation: none;
 }
 
 @keyframes task-complete-pulse {

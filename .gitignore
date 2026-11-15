@@ -13,6 +13,7 @@
 /dist
 /dist-electron
 /release
+/scratch
 *.AppImage
 *.exe
 *.dmg

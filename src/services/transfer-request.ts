@@ -80,7 +80,7 @@ export function getTransferRequestHtml(
   const todayIso = new Date().toISOString().slice(0, 10);
   const issuedDate = values.issuedDate ? formatDateSlash(values.issuedDate) : formatDateSlash(todayIso);
 
-  const reason = values.reason?.trim() || 'قرب المدرسة الثانية من مقر الإقامة .';
+  const reason = values.reason?.trim() || '';
 
   return fillTemplate(transferRequestTemplateRaw, {
     num: referenceNumber,

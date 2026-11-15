@@ -1,5 +1,5 @@
 import type { Client } from './clients';
-import evaluationCardTemplateRaw from '../../بطاقة تقييم.html?raw';
+import { EVALUATION_TEMPLATE_RAW } from './evaluation-template-raw';
 
 export interface EvaluationCardValues {
   /** Candidate full name (الإسم واللقب) */
@@ -12,6 +12,8 @@ export interface EvaluationCardValues {
   registrationDate?: string;
   /** Dossier submission date at prefecture (تاريخ إيداع الملف لدى مصالح المندوبية الولائية) */
   submissionDate?: string;
+  /** Wilaya name (الولاية) */
+  wilaya?: string;
 }
 
 /**
@@ -68,13 +70,15 @@ export function getEvaluationCardHtml(
   const submissionDate = values.submissionDate !== undefined
     ? values.submissionDate
     : formatEvaluationDate(client.attendance?.submissionDate || client.registrationDate);
+  const wilaya = values.wilaya !== undefined ? values.wilaya : 'المدية';
 
-  return fillTemplate(evaluationCardTemplateRaw, {
+  return fillTemplate(EVALUATION_TEMPLATE_RAW, {
     name,
     birth,
     address,
     registrationDate,
     submissionDate,
+    wilaya,
   });
 }
 
@@ -114,34 +118,34 @@ interface TemplateData {
   address: string;
   registrationDate: string;
   submissionDate: string;
+  wilaya: string;
 }
 
 function fillTemplate(template: string, data: TemplateData): string {
-  function replaceField(currentHtml: string, attr: string, value: string): string {
-    const escaped = escapeHtml(value);
-    return currentHtml
-      .replace(
-        new RegExp(`data-f="${attr}"[^>]*value="[^"]*"`, 'g'),
-        `data-f="${attr}" value="${escaped}"`
-      )
-      .replace(
-        new RegExp(`(<[^>]*data-f="${attr}"[^>]*>)(.*?)(</[^>]+>)`, 'gs'),
-        `$1${escaped}$3`
-      );
-  }
+  const escapedName = escapeHtml(data.name);
+  const escapedBirth = escapeHtml(data.birth);
+  const escapedAddress = escapeHtml(data.address);
+  const escapedRegDate = escapeHtml(data.registrationDate);
+  const escapedSubDate = escapeHtml(data.submissionDate);
+  const escapedWilaya = escapeHtml(data.wilaya || 'المدية');
 
-  let nextTemplate = template;
-  for (const [field, value] of Object.entries({
-    name: data.name,
-    birth: data.birth,
-    address: data.address,
-    regdate: data.registrationDate,
-    subdate: data.submissionDate,
-  })) {
-    nextTemplate = replaceField(nextTemplate, field, value);
-  }
+  let filled = template
+    .replace(/\{\{NAME\}\}/g, escapedName)
+    .replace(/\{\{BIRTH\}\}/g, escapedBirth)
+    .replace(/\{\{ADDRESS\}\}/g, escapedAddress)
+    .replace(/\{\{REGDATE\}\}/g, escapedRegDate)
+    .replace(/\{\{SUBDATE\}\}/g, escapedSubDate)
+    .replace(/\{\{WILAYA\}\}/g, escapedWilaya);
 
-  return nextTemplate;
+  // Also replace data-f elements if template uses them
+  filled = filled
+    .replace(/(<[^>]*data-f="name"[^>]*>)(.*?)(<\/[^>]+>)/gs, `$1${escapedName}$3`)
+    .replace(/(<[^>]*data-f="birth"[^>]*>)(.*?)(<\/[^>]+>)/gs, `$1${escapedBirth}$3`)
+    .replace(/(<[^>]*data-f="address"[^>]*>)(.*?)(<\/[^>]+>)/gs, `$1${escapedAddress}$3`)
+    .replace(/(<[^>]*data-f="regdate"[^>]*>)(.*?)(<\/[^>]+>)/gs, `$1${escapedRegDate}$3`)
+    .replace(/(<[^>]*data-f="subdate"[^>]*>)(.*?)(<\/[^>]+>)/gs, `$1${escapedSubDate}$3`);
+
+  return filled;
 }
 
-export const EVALUATION_CARD_TEMPLATE_RAW = evaluationCardTemplateRaw;
+export const EVALUATION_CARD_TEMPLATE_RAW = EVALUATION_TEMPLATE_RAW;

@@ -136,7 +136,7 @@ export default function ProfileMainContent({
                 <div>
                   <span className="detail-label">رقم الهاتف</span>
                   {isEditing ? (
-                    <input className="detail-input" value={draft.phone} onChange={(event) => onUpdateDraft('phone', event.target.value)} placeholder="05 00 00 00 00" inputMode="tel" />
+                    <input className="detail-input" value={draft.phone} onChange={(event) => onUpdateDraft('phone', event.target.value)} placeholder="رقم الهاتف" inputMode="tel" />
                   ) : (
                     <div className="detail-value">{client.phone || 'غير محدد'}</div>
                   )}
@@ -154,7 +154,7 @@ export default function ProfileMainContent({
                 <div>
                   <span className="detail-label">مكان الميلاد</span>
                   {isEditing ? (
-                    <input className="detail-input" value={draft.birthPlace || ''} onChange={(event) => onUpdateDraft('birthPlace', event.target.value)} placeholder="مثال: الجزائر، المدية..." />
+                    <input className="detail-input" value={draft.birthPlace || ''} onChange={(event) => onUpdateDraft('birthPlace', event.target.value)} placeholder="مكان الميلاد" />
                   ) : (
                     <div className="detail-value">{client.birthPlace || 'غير محدد'}</div>
                   )}
@@ -163,7 +163,7 @@ export default function ProfileMainContent({
                 <div>
                   <span className="detail-label">البريد الإلكتروني</span>
                   {isEditing ? (
-                    <input className="detail-input" type="email" value={draft.email} onChange={(event) => onUpdateDraft('email', event.target.value)} placeholder="example@email.com" />
+                    <input className="detail-input" type="email" value={draft.email} onChange={(event) => onUpdateDraft('email', event.target.value)} placeholder="البريد الإلكتروني" />
                   ) : (
                     <div className="detail-value">{client.email || 'غير محدد'}</div>
                   )}
@@ -183,7 +183,7 @@ export default function ProfileMainContent({
             <section className="profile-card documents-card">
               <h2 className="card-title">
                 <span className="card-mark"><Icon name="check" size={18} /></span>وثائق الملف
-                <span style={{ marginRight: 'auto', background: '#f0edff', color: '#7159d6', borderRadius: '20px', fontSize: '11px', fontWeight: 800, padding: '4px 10px' }}>
+                <span style={{ marginRight: 'auto', background: '#0155fe', color: '#ffffff', borderRadius: '20px', fontSize: '11px', fontWeight: 800, padding: '4px 10px' }}>
                   {receivedCount} / {totalDocs} مستلمة
                 </span>
               </h2>
@@ -205,13 +205,12 @@ export default function ProfileMainContent({
                       role={isEditing ? 'button' : undefined}
                       tabIndex={isEditing ? 0 : undefined}
                     >
-                      <span className="document-status" aria-label={isReceived ? 'مكتمل' : 'قيد الإنجاز'}>
+                      <span className="document-status" aria-label={isReceived ? 'محدد' : 'غير محدد'}>
                         {isReceived && <Icon name="check" size={15} />}
                       </span>
 
                       <div className="document-content">
                         <span className="document-title">{document.title}</span>
-                        <span className="document-state-badge">{isReceived ? 'مكتمل' : 'قيد الإنجاز'}</span>
                       </div>
                     </div>
                   );

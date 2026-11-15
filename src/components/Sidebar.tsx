@@ -24,6 +24,7 @@ export default function Sidebar({ onOpenCandidatesList }: SidebarProps) {
 	const [vehicleAlertSummary, setVehicleAlertSummary] = useState({ totalAlerts: 0, expiredCount: 0 });
 	const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const [profileUpdaterOpen, setProfileUpdaterOpen] = useState(false);
 
 	useEffect(() => {
 		document.documentElement.setAttribute('data-theme', theme);
@@ -197,19 +198,40 @@ export default function Sidebar({ onOpenCandidatesList }: SidebarProps) {
 
 				{/* User Profile & Logout at Bottom */}
 				<div className="sidebar-footer">
-					<UpdateButton />
-					<div className="sidebar-profile-card">
-						<div className="sidebar-avatar" title="مدير مدرسة السياقة">
-							م
+					<div
+						className="sidebar-profile-card"
+						onClick={() => setProfileUpdaterOpen(true)}
+						onKeyDown={(event) => {
+							if (event.key === 'Enter' || event.key === ' ') {
+								event.preventDefault();
+								setProfileUpdaterOpen(true);
+							}
+						}}
+						tabIndex={0}
+						role="button"
+						aria-label="فتح تحديث التطبيق"
+					>
+						<div className="sidebar-avatar-wrap">
+							<div className="sidebar-avatar" title="مدير مدرسة السياقة">
+								م
+							</div>
 						</div>
 						<div className="sidebar-profile-info">
 							<div className="sidebar-profile-name">مدير المدرسة</div>
 							<div className="sidebar-profile-role">مسؤول النظام</div>
 						</div>
+						<UpdateButton
+							showTrigger={false}
+							open={profileUpdaterOpen}
+							onOpenChange={setProfileUpdaterOpen}
+						/>
 						<button
 							type="button"
 							className="sidebar-theme-btn"
-							onClick={toggleTheme}
+							onClick={(event) => {
+									event.stopPropagation();
+									toggleTheme();
+								}}
 							title={theme === 'dark' ? 'وضع النهار' : 'وضع الليل'}
 							aria-label={theme === 'dark' ? 'تبديل إلى الوضع الفاتح' : 'تبديل إلى الوضع الداكن'}
 						>
@@ -235,11 +257,12 @@ export default function Sidebar({ onOpenCandidatesList }: SidebarProps) {
 							type="button"
 							className="sidebar-logout-btn"
 							title="تسجيل الخروج"
-							onClick={() => {
-								if (window.confirm('هل تريد تسجيل الخروج من النظام؟')) {
-									window.location.reload();
-								}
-							}}
+							onClick={(event) => {
+									event.stopPropagation();
+									if (window.confirm('هل تريد تسجيل الخروج من النظام؟')) {
+										window.location.reload();
+									}
+								}}
 							aria-label="تسجيل الخروج"
 						>
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

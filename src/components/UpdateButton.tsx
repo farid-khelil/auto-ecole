@@ -4,10 +4,27 @@ import type { UpdaterStatusData } from '../electron-api';
 interface UpdateButtonProps {
   className?: string;
   compact?: boolean;
+  showTrigger?: boolean;
+  open?: boolean;
+  onOpenChange?: (nextOpen: boolean) => void;
 }
 
-export default function UpdateButton({ className = '', compact = false }: UpdateButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function UpdateButton({
+  className = '',
+  compact = false,
+  showTrigger = true,
+  open,
+  onOpenChange,
+}: UpdateButtonProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = open ?? internalOpen;
+  const setIsOpen = (nextOpen: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(nextOpen);
+    } else {
+      setInternalOpen(nextOpen);
+    }
+  };
   const [currentVersion, setCurrentVersion] = useState<string>('0.1.0');
   const [status, setStatus] = useState<UpdaterStatusData['status'] | 'idle'>('idle');
   const [newVersion, setNewVersion] = useState<string>('');
@@ -118,40 +135,44 @@ export default function UpdateButton({ className = '', compact = false }: Update
 
   return (
     <>
-      {compact ? (
-        <button
-          type="button"
-          className={`updater-compact-btn ${status === 'available' ? 'has-update' : ''} ${className}`}
-          onClick={handleCheckForUpdates}
-          title="تحديث التطبيق"
-          aria-label="تحديث التطبيق"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-          </svg>
-          {status === 'available' && <span className="updater-pulse-dot" />}
-        </button>
-      ) : (
-        <button
-          type="button"
-          className={`updater-sidebar-btn ${status === 'available' ? 'has-update' : ''} ${className}`}
-          onClick={handleCheckForUpdates}
-        >
-          <div className="updater-sidebar-btn-icon">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-            </svg>
-          </div>
-          <div className="updater-sidebar-btn-text">
-            <span className="updater-btn-label">تحديث التطبيق</span>
-            <span className="updater-btn-version">v{currentVersion}</span>
-          </div>
-          {status === 'available' ? (
-            <span className="updater-badge-available">تحديث متاح</span>
+      {showTrigger && (
+        <>
+          {compact ? (
+            <button
+              type="button"
+              className={`updater-compact-btn ${status === 'available' ? 'has-update' : ''} ${className}`}
+              onClick={handleCheckForUpdates}
+              title="تحديث التطبيق"
+              aria-label="تحديث التطبيق"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+              </svg>
+              {status === 'available' && <span className="updater-pulse-dot" />}
+            </button>
           ) : (
-            <span className="updater-badge-check">فحص</span>
+            <button
+              type="button"
+              className={`updater-sidebar-btn ${status === 'available' ? 'has-update' : ''} ${className}`}
+              onClick={handleCheckForUpdates}
+            >
+              <div className="updater-sidebar-btn-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+              </div>
+              <div className="updater-sidebar-btn-text">
+                <span className="updater-btn-label">تحديث التطبيق</span>
+                <span className="updater-btn-version">v{currentVersion}</span>
+              </div>
+              {status === 'available' ? (
+                <span className="updater-badge-available">تحديث متاح</span>
+              ) : (
+                <span className="updater-badge-check">فحص</span>
+              )}
+            </button>
           )}
-        </button>
+        </>
       )}
 
       {/* Update Modal Dialog */}

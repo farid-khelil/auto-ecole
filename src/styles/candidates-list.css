@@ -461,6 +461,35 @@
   gap: 12px;
 }
 
+.document-preview-footer {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-card) !important;
+}
+
+.document-preview-btn-secondary-download {
+  background: var(--success);
+}
+
+.document-preview-btn-secondary-download:hover:not(:disabled) {
+  background: var(--success-hover);
+}
+
+.document-preview-btn-download {
+  background: var(--success);
+}
+
+.document-preview-btn-download:hover:not(:disabled) {
+  background: var(--success-hover);
+}
+
+.document-preview-btn-print {
+  background: var(--primary);
+}
+
+.document-preview-btn-print:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
 .btn-print-list {
   background: var(--primary);
   color: #ffffff;

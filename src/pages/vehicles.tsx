@@ -762,7 +762,7 @@ export default function VehiclesPage() {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="مثال: داسيا سانديرو (Dacia Sandero)"
+                      placeholder="اسم السيارة والطراز"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
                       required
@@ -774,7 +774,7 @@ export default function VehiclesPage() {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="مثال: 01452 118 16"
+                      placeholder="رقم الترقيم"
                       value={formPlate}
                       onChange={(e) => setFormPlate(e.target.value)}
                       required
@@ -803,7 +803,7 @@ export default function VehiclesPage() {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="مثال: 2021"
+                      placeholder="سنة الصنع"
                       value={formModelYear}
                       onChange={(e) => setFormModelYear(e.target.value)}
                     />
@@ -843,7 +843,7 @@ export default function VehiclesPage() {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="مثال: سيارة مجهزة بدواسات مزدوجة معتمدة"
+                      placeholder="ملاحظات إضافية"
                       value={formNotes}
                       onChange={(e) => setFormNotes(e.target.value)}
                     />
@@ -1041,7 +1041,7 @@ export default function VehiclesPage() {
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="رقم بوليصة التأمين أو رقم الوصل"
+                    placeholder="رقم الوثيقة"
                     value={renewDocNum}
                     onChange={(e) => setRenewDocNum(e.target.value)}
                   />

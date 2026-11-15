@@ -31,7 +31,10 @@ function formatDate(value?: string) {
 }
 
 function toDashboardClient(client: Client): DashboardClient {
-	const date = new Intl.DateTimeFormat('ar-DZ', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${client.registrationDate}T00:00:00`));
+	const isValidDate = Boolean(client.registrationDate && !isNaN(new Date(`${client.registrationDate}T00:00:00`).getTime()));
+	const date = isValidDate
+		? new Intl.DateTimeFormat('ar-DZ', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${client.registrationDate}T00:00:00`))
+		: 'غير محدد';
 	const paidAmount = Number(client.paidAmount ?? 0);
 	const totalAmount = Number(client.totalAmount ?? 35000);
 	const remainingAmount = Math.max(0, totalAmount - paidAmount);
@@ -39,7 +42,8 @@ function toDashboardClient(client: Client): DashboardClient {
 
 	return {
 		...client,
-		pack: String(client.training ?? '').trim(),
+		name: client.name || 'بدون اسم',
+		pack: String(client.training || 'B').trim(),
 		date,
 		paidAmount,
 		totalAmount,

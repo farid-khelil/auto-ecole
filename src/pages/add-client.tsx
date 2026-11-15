@@ -74,22 +74,23 @@ export default function AddClient() {
 		const formData = new FormData(event.currentTarget);
 		const firstName = String(formData.get('firstName') || '').trim();
 		const lastName = String(formData.get('lastName') || '').trim();
+		const fullName = `${firstName} ${lastName}`.trim();
 		const clientData = {
 			registrationNumber: String(formData.get('registrationNumber') || '').trim() || undefined,
-			name: `${firstName} ${lastName}`.trim(),
-			phone: String(formData.get('phone') || ''),
+			name: fullName || 'بدون اسم',
+			phone: String(formData.get('phone') || '').trim(),
 			birthDate: String(formData.get('birthDate') || ''),
 			birthPlace: String(formData.get('birthPlace') || ''),
 			email: String(formData.get('email') || ''),
 			address: String(formData.get('address') || ''),
 			training: String(formData.get('training') || 'B'),
 			obtainedCategories,
-			registrationDate: String(formData.get('startDate') || ''),
+			registrationDate: String(formData.get('startDate') || '') || today,
 			receivedDocuments,
 			documents: documentsForClient,
 			paidAmount: Number(paidAmount || 0),
 			totalAmount: Number(totalAmount || 0),
-			stage,
+			stage: stage || 'قانون المرور',
 			photo: photo || undefined,
 		};
 		try {
@@ -224,16 +225,16 @@ export default function AddClient() {
 						</div>
 						<div className="fields">
 							<div className="field">
-								<label htmlFor="firstName">الاسم <span className="required">*</span></label>
-								<input id="firstName" name="firstName" required />
+								<label htmlFor="firstName">الاسم</label>
+								<input id="firstName" name="firstName" placeholder="الاسم الكامل" />
 							</div>
 							<div className="field">
-								<label htmlFor="lastName">اللقب <span className="required">*</span></label>
-								<input id="lastName" name="lastName" required />
+								<label htmlFor="lastName">اللقب</label>
+								<input id="lastName" name="lastName" placeholder="اللقب" />
 							</div>
 							<div className="field">
-								<label htmlFor="phone">رقم الهاتف <span className="required">*</span></label>
-								<input id="phone" name="phone" required inputMode="tel" placeholder="05 00 00 00 00" />
+								<label htmlFor="phone">رقم الهاتف</label>
+								<input id="phone" name="phone" inputMode="tel" placeholder="رقم الهاتف" />
 							</div>
 							<div className="field">
 								<label htmlFor="birthDate">تاريخ الميلاد</label>
@@ -245,11 +246,11 @@ export default function AddClient() {
 							</div>
 							<div className="field">
 								<label htmlFor="email">البريد الإلكتروني</label>
-								<input id="email" name="email" type="email" placeholder="example@email.com" />
+								<input id="email" name="email" type="email" placeholder="البريد الإلكتروني" />
 							</div>
 							<div className="field full">
 								<label htmlFor="address">العنوان</label>
-								<input id="address" name="address" placeholder="العنوان أو الحي" />
+								<input id="address" name="address" placeholder="العنوان" />
 							</div>
 						</div>
 					</section>
@@ -262,8 +263,8 @@ export default function AddClient() {
 								<input id="registrationNumber" name="registrationNumber" />
 							</div>
 							<div className="field">
-								<label htmlFor="training">نوع التكوين <span className="required">*</span></label>
-								<select id="training" name="training" required defaultValue="B">
+								<label htmlFor="training">نوع التكوين</label>
+								<select id="training" name="training" defaultValue="B">
 									<option value="A">A</option>
 									<option value="A1">A1</option>
 									<option value="B">B</option>
@@ -278,11 +279,11 @@ export default function AddClient() {
 								</select>
 							</div>
 							<div className="field">
-								<label htmlFor="startDate">تاريخ الإيداع <span className="required">*</span></label>
-								<input id="startDate" name="startDate" type="date" required defaultValue={today} />
+								<label htmlFor="startDate">تاريخ الإيداع</label>
+								<input id="startDate" name="startDate" type="date" defaultValue={today} />
 							</div>
 							<div className="field">
-								<label htmlFor="stage">التقدم<span className="required">*</span></label>
+								<label htmlFor="stage">التقدم</label>
 								<select
 									id="stage"
 									value={stage}

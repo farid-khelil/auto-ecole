@@ -50,9 +50,7 @@ export const CONVOCATION_TEMPLATE_RAW = `<!DOCTYPE html>
     direction: rtl;
   }
 
-  .copy { position: absolute; left: 0; right: 0; height: 148mm; padding: 0 20mm 0 20mm; }
-  .copy.top    { top: 10mm; }
-  .copy.bottom { top: 158mm; }
+  .copy { padding: 0 20mm 0 20mm; }
 
   .republic { text-align: center; font-size: 15pt; text-decoration: underline; margin: 0; padding-top: 6mm; }
 
@@ -84,34 +82,6 @@ export const CONVOCATION_TEMPLATE_RAW = `<!DOCTYPE html>
 
   <!-- ============ COPY 1 ============ -->
   <section class="copy top">
-    <p class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</p>
-
-    <div class="school">
-      <div>مدرســة تعليم السيـــــاقة</div>
-      <div class="kash">بـــــوطيبـــة محمـــــد</div>
-      <div>الحي الغربي - عين بوسيف</div>
-      <div class="city">المـــديـــــــــة</div>
-    </div>
-
-    <div class="titlerow">
-      <span class="num">{{NUM}}</span>
-      <div class="title">إستــــــدعـــــــــاء</div>
-    </div>
-
-    <div class="body">
-      <p>المطلوب من السيد (ة) : {{NAME}}</p>
-      <p>الساكن في : {{ADDR}}</p>
-      <p class="em">أن يتقدم إلى مدرسة تعليم السياقة يوم : {{EXAMDATE}} إبتداءا من الساعة {{TIME}}</p>
-      <p>من أجل إجراء الإمتحان النظري و التطبيقي لرخصة السياقة صنف ({{CAT}})</p>
-      <p>مرفوق ببطاقة التعريف الوطنية وطابع بريدي بقيمة {{FEE}} دج</p>
-    </div>
-
-    <div class="dateline">عين بوسيف في : {{ISSUED}}</div>
-    <div class="director">المــــــــــدير</div>
-  </section>
-
-  <!-- ============ COPY 2 ============ -->
-  <section class="copy bottom">
     <p class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</p>
 
     <div class="school">

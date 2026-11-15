@@ -67,7 +67,7 @@ export default function DocumentPreviewModal({
           style={{
             flex: 1,
             padding: 0,
-            background: '#2e3235',
+            background: 'var(--bg-card-alt)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -77,11 +77,10 @@ export default function DocumentPreviewModal({
         </div>
 
         <footer
-          className="candidates-modal-footer"
+          className="candidates-modal-footer document-preview-footer"
           style={{
             padding: '12px 20px',
-            borderTop: '1px solid #e5e7eb',
-            background: '#fff',
+            borderTop: '1px solid var(--border-card)',
             display: 'flex',
             justifyContent: 'flex-end',
             gap: '10px',
@@ -98,8 +97,7 @@ export default function DocumentPreviewModal({
           {secondaryDownloadLabel && onSecondaryDownload && (
             <button
               type="button"
-              className="btn-print-list"
-              style={{ background: '#0f5132' }}
+              className="btn-print-list document-preview-btn-secondary-download"
               onClick={onSecondaryDownload}
               title={secondaryDownloadTitle}
             >
@@ -108,8 +106,7 @@ export default function DocumentPreviewModal({
           )}
           <button
             type="button"
-            className="btn-print-list"
-            style={{ background: '#1d6f42' }}
+            className="btn-print-list document-preview-btn-download"
             onClick={onDownload}
             title={downloadTitle}
           >
@@ -117,8 +114,7 @@ export default function DocumentPreviewModal({
           </button>
           <button
             type="button"
-            className="btn-print-list"
-            style={{ background: '#674fd7' }}
+            className="btn-print-list document-preview-btn-print"
             onClick={onPrint}
           >
             <Icon name="print" size={17} /> {printLabel}

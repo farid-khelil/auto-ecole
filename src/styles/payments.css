@@ -1599,53 +1599,413 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Notification Popover */
-.notif-popover {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 10px);
-  width: 340px;
-  background: #1f2027;
-  border: 1px solid #292a33;
-  border-radius: 16px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  overflow: hidden;
-  padding: 16px;
+/* ─── Notification Center ─── */
+.payments-notification-wrap {
+  position: relative;
 }
 
-.notif-popover-head {
+.payments-notification-btn {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #9a9cab;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.notif-popover-title {
-  font-size: 14px;
-  font-weight: 800;
+.payments-notification-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
 }
 
-.notif-popover-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 280px;
-  overflow-y: auto;
+.payments-notification-btn.active {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
 }
 
-.notif-popover-item {
+.payments-notification-btn.has-alerts {
+  color: #fbbf24;
+}
+
+/* Bell ring animation */
+.payments-notification-btn.ringing .payments-bell-icon {
+  animation: paymentsBellRing 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform-origin: top center;
+}
+
+@keyframes paymentsBellRing {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-12deg); }
+  30% { transform: rotate(10deg); }
+  40% { transform: rotate(-8deg); }
+  50% { transform: rotate(6deg); }
+  60% { transform: rotate(-4deg); }
+  70% { transform: rotate(2deg); }
+  80% { transform: rotate(-1deg); }
+  100% { transform: rotate(0); }
+}
+
+/* Badge */
+.payments-notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: none;
+  animation: paymentsBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes paymentsBadgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Ring aura */
+.payments-bell-ring-aura {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  animation: paymentsAuraRing 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes paymentsAuraRing {
+  0% { opacity: 0.7; transform: scale(1); }
+  70% { opacity: 0; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Popout */
+.payments-notification-popout {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  width: 400px;
+  background: #1a1b22;
+  border: 1px solid #292a33;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  overflow: hidden;
+  animation: paymentsPopOutSpring 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes paymentsPopOutSpring {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.payments-notification-header {
+  padding: 16px 18px 10px;
+  border-bottom: 1px solid #292a33;
+}
+
+.payments-notification-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.payments-notification-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.payments-notification-close {
+  background: none;
+  border: none;
+  color: #9a9cab;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.payments-notification-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.payments-notification-settings-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #33343e;
+  border-radius: 8px;
+  color: #9a9cab;
+  font-size: 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.payments-notification-settings-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Tabs */
+.payments-notif-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #292a33;
+  overflow-x: auto;
+}
+
+.payments-notif-tab {
+  background: transparent;
+  border: none;
+  color: #9a9cab;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.payments-notif-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #d1d5db;
+}
+
+.payments-notif-tab.active {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+/* Body */
+.payments-notification-body {
+  padding: 12px 18px 16px;
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payments-notification-body::-webkit-scrollbar {
+  width: 4px;
+}
+.payments-notification-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.payments-notification-body::-webkit-scrollbar-thumb {
+  background: #33343e;
+  border-radius: 2px;
+}
+
+/* Section */
+.payments-notif-section-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d1d5db;
+  margin-bottom: 8px;
+}
+
+.payments-notif-section-icon {
+  font-size: 14px;
+}
+
+.payments-notif-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Card */
+.payments-notif-card {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #1f2027;
+  border-right: 3px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.payments-notif-card:hover {
+  background: #25262f;
+  transform: translateX(-2px);
+}
+
+.payments-notif-card.is-danger {
+  border-right-color: #ef4444;
+}
+
+.payments-notif-card.is-warning {
+  border-right-color: #f59e0b;
+}
+
+.payments-notif-card.is-amber {
+  border-right-color: #fbbf24;
+}
+
+.payments-notif-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.payments-notif-card-sub {
+  font-size: 12px;
+  color: #9a9cab;
+}
+
+/* Empty state */
+.payments-notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 0;
+  color: #9a9cab;
+  font-size: 13px;
+}
+
+.payments-notif-empty span:first-child {
+  font-size: 24px;
+}
+
+/* Timer Modal */
+.payments-timer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+.payments-timer-modal {
+  background: #1f2027;
+  border: 1px solid #33343e;
+  border-radius: 18px;
+  padding: 28px 32px;
+  width: 340px;
+  max-width: 90vw;
+  animation: paymentsPopOutSpring 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.payments-timer-modal h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.payments-timer-modal p {
+  font-size: 13px;
+  color: #9a9cab;
+  margin: 0 0 16px 0;
+}
+
+.payments-timer-input-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  margin-bottom: 20px;
+}
+
+.payments-timer-input {
+  width: 80px;
+  padding: 8px 12px;
   border-radius: 10px;
+  border: 1px solid #33343e;
   background: #17181d;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.payments-timer-input:focus {
+  outline: none;
+  border-color: #818cf8;
+}
+
+.payments-timer-input-row > span {
+  color: #9a9cab;
+  font-size: 14px;
+}
+
+.payments-timer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-timer-save {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #6366f1;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
-.notif-popover-item:hover {
-  background: #23252e;
+.btn-timer-save:hover {
+  background: #4f46e5;
+}
+
+.btn-timer-cancel {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #33343e;
+  border-radius: 10px;
+  background: transparent;
+  color: #9a9cab;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-timer-cancel:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .payments-notification-btn.ringing .payments-bell-icon,
+  .payments-notif-badge,
+  .payments-bell-ring-aura,
+  .payments-notification-popout,
+  .payments-timer-modal {
+    animation: none !important;
+  }
 }

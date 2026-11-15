@@ -480,7 +480,7 @@ export default function CandidateListDetailsPage() {
         <div className="list-stats-grid">
           <div className="list-stat-card">
             <div className="stat-label">إجمالي المترشحين</div>
-            <div className="stat-value" style={{ color: '#20243d' }}>
+            <div className="stat-value" style={{ color: '#ffffff' }}>
               {stats.total}
               <span className="stat-unit">مترشح</span>
             </div>
@@ -682,7 +682,7 @@ export default function CandidateListDetailsPage() {
                           to={`/clients/${client.id}`}
                           style={{
                             textDecoration: 'none',
-                            color: '#20243d',
+                            color: '#ffffff',
                             fontWeight: 800,
                             fontSize: '13.5px',
                           }}
@@ -747,7 +747,15 @@ export default function CandidateListDetailsPage() {
                       </td>
                       <td>
                         <span style={{ fontWeight: 700, color: '#334155', fontSize: '12.5px' }}>
-                          {formatDate(getCandidateLastExamDate(client, list || { id: '', createdAt: '', candidates: [] }, allLists, allClients))}
+                          {(() => {
+                            const lastDate = getCandidateLastExamDate(
+                              client,
+                              list || { id: '', createdAt: '', candidates: [] },
+                              allLists,
+                              allClients
+                            );
+                            return lastDate ? formatDate(lastDate) : '';
+                          })()}
                         </span>
                       </td>
                       <td>
@@ -865,7 +873,7 @@ export default function CandidateListDetailsPage() {
                   value={transmittalNumber}
                   onChange={(event) => setTransmittalNumber(event.target.value)}
                   onBlur={() => void saveTransmittalDetails()}
-                  placeholder="مثال: 29/2026"
+                  placeholder="رقم الإرسال"
                 />
               </label>
               <label className="document-preview-field">

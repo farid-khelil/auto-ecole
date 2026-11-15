@@ -4,23 +4,22 @@ export type ClientDocument = { id: string; title: string };
 
 export type CreateClientInput = {
   registrationNumber?: string;
-  name: string;
-  phone: string;
+  name?: string;
+  phone?: string;
   birthDate?: string;
   email?: string;
   address?: string;
-  training: string;
-  registrationDate: string;
-  receivedDocuments: string[];
-  documents: ClientDocument[];
+  training?: string;
+  registrationDate?: string;
+  receivedDocuments?: string[];
+  documents?: ClientDocument[];
   history?: unknown[];
 };
 
 type CreateClientResult = { id: number };
 
-function requiredText(value: unknown, field: string) {
-  if (typeof value !== 'string' || !value.trim()) throw new Error(`${field} is required.`);
-  return value.trim();
+function cleanText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
 function optionalText(value: unknown) {
@@ -48,13 +47,13 @@ export function createClient(input: unknown): CreateClientResult {
   const data = input as Partial<CreateClientInput>;
   const client = {
     registrationNumber: optionalText(data.registrationNumber),
-    name: requiredText(data.name, 'Name'),
-    phone: requiredText(data.phone, 'Phone number'),
+    name: cleanText(data.name) || 'بدون اسم',
+    phone: cleanText(data.phone),
     birthDate: optionalText(data.birthDate),
     email: optionalText(data.email),
     address: optionalText(data.address),
-    training: requiredText(data.training, 'Training'),
-    registrationDate: requiredText(data.registrationDate, 'Registration date'),
+    training: cleanText(data.training) || 'B',
+    registrationDate: cleanText(data.registrationDate) || new Date().toISOString().slice(0, 10),
     receivedDocuments: stringList(data.receivedDocuments),
     documents: documentList(data.documents),
     history: historyList(data.history),

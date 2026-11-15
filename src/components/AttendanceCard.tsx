@@ -364,7 +364,7 @@ export default function AttendanceCard({
                           onChange={(e) =>
                             updateLesson('drivingLessons', lesson.num, { time: e.target.value })
                           }
-                          placeholder="مثال: 14:00"
+                          placeholder="الوقت"
                           style={{ width: '95px' }}
                         />
                       </td>
@@ -426,7 +426,7 @@ export default function AttendanceCard({
                           onChange={(e) =>
                             updateLesson('codeLessons', lesson.num, { time: e.target.value })
                           }
-                          placeholder="مثال: 10:00"
+                          placeholder="الوقت"
                           style={{ width: '95px' }}
                         />
                       </td>
@@ -501,7 +501,7 @@ export default function AttendanceCard({
                           className="drawer-input"
                           value={exam.examiner || ''}
                           onChange={(e) => updateExam(exam.num, { examiner: e.target.value })}
-                          placeholder="اسم الممتحن..."
+                          placeholder="اسم الممتحن"
                           style={{ width: '100%' }}
                         />
                       </td>

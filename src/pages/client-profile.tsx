@@ -10,7 +10,7 @@ import { createInitialAttendanceCard, getLatestExam, type AttendanceCard as Atte
 import { printMedicalCertificate } from '../services/medical-cert';
 import { getConvocationLetterHtml, downloadConvocationLetter, hourToArabic } from '../services/convocation-letter';
 import { getTransferRequestHtml, downloadTransferRequest, splitClientName } from '../services/transfer-request';
-import { getEvaluationCardHtml, downloadEvaluationCard } from '../services/evaluation-card';
+import { getEvaluationCardHtml, downloadEvaluationCard, formatEvaluationBirth, formatEvaluationDate } from '../services/evaluation-card';
 import '../styles/client-profile.css';
 import '../styles/payments.css';
 import '../styles/candidates-list.css';
@@ -39,7 +39,7 @@ function toClient(data: Partial<Client>, id: string): Client {
 	return {
 		id: data.id || id,
 		registrationNumber: data.registrationNumber || '',
-		name: data.name || '',
+		name: data.name || 'بدون اسم',
 		phone: data.phone || '',
 		birthDate: data.birthDate || '',
 		birthPlace: data.birthPlace || '',
@@ -128,12 +128,18 @@ export default function ClientProfile() {
 	const [transferFirstName, setTransferFirstName] = useState('');
 	const [transferBirth, setTransferBirth] = useState('');
 	const [transferRegNum, setTransferRegNum] = useState('');
-	const [transferReason, setTransferReason] = useState('قرب المدرسة الثانية من مقر الإقامة .');
+	const [transferReason, setTransferReason] = useState('');
 	const [transferDate, setTransferDate] = useState(() => new Date().toISOString().slice(0, 10));
 
 	// Evaluation Card (بطاقة تقييم) State
 	const evaluationFrameRef = useRef<HTMLIFrameElement>(null);
 	const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
+	const [evaluationName, setEvaluationName] = useState('');
+	const [evaluationBirth, setEvaluationBirth] = useState('');
+	const [evaluationAddress, setEvaluationAddress] = useState('');
+	const [evaluationRegDate, setEvaluationRegDate] = useState('');
+	const [evaluationSubDate, setEvaluationSubDate] = useState('');
+	const [evaluationWilaya, setEvaluationWilaya] = useState('المدية');
 
 	const transferReferenceText = `${transferDate || new Date().toISOString().slice(0, 10)} رقم : ${transferNumber || '02'} / م.و.أ.ط/ ${transferYear || new Date().getFullYear().toString()}`;
 
@@ -451,12 +457,19 @@ export default function ClientProfile() {
 		setTransferYear(new Date().getFullYear().toString());
 		setTransferFrom('بوطيبة محمد');
 		setTransferTo('');
-		setTransferReason('قرب المدرسة الثانية من مقر الإقامة .');
+		setTransferReason('');
 		setTransferDate(new Date().toISOString().slice(0, 10));
 		setIsTransferModalOpen(true);
 	}
 
 	function handleOpenEvaluationModal() {
+		if (!currentClient) return;
+		setEvaluationName(currentClient.name || '');
+		setEvaluationBirth(formatEvaluationBirth(currentClient.birthDate, currentClient.birthPlace));
+		setEvaluationAddress(currentClient.address || '');
+		setEvaluationRegDate(formatEvaluationDate(currentClient.registrationDate));
+		setEvaluationSubDate(formatEvaluationDate(currentClient.attendance?.submissionDate || currentClient.registrationDate));
+		setEvaluationWilaya('المدية');
 		setIsEvaluationModalOpen(true);
 	}
 
@@ -595,7 +608,7 @@ export default function ClientProfile() {
 									required
 									value={paymentAmountInput}
 									onChange={(e) => setPaymentAmountInput(e.target.value)}
-									placeholder="مثال: 15000"
+									placeholder="المبلغ"
 									className="modal-input"
 									style={{ fontSize: '16px', fontWeight: 700 }}
 								/>
@@ -610,7 +623,7 @@ export default function ClientProfile() {
 									type="text"
 									value={paymentNote}
 									onChange={(e) => setPaymentNote(e.target.value)}
-									placeholder="مثال: وصل دفعة رقم 105، شطر ثان..."
+									placeholder="ملاحظات الدفع"
 									className="modal-input"
 								/>
 							</div>
@@ -649,7 +662,7 @@ export default function ClientProfile() {
 								className="modal-input history-note-input"
 								value={noteText}
 								onChange={(event) => setNoteText(event.target.value)}
-								placeholder="مثال: طلب المتدرب تأجيل موعد الامتحان…"
+								placeholder="ملاحظة"
 								autoFocus
 								required
 							/>
@@ -736,7 +749,7 @@ export default function ClientProfile() {
 									type="text"
 									value={convocationNumber}
 									onChange={(event) => setConvocationNumber(event.target.value)}
-									placeholder="مثال: 2026/88"
+									placeholder="رقم الاستدعاء"
 								/>
 							</label>
 							<label className="document-preview-field">
@@ -805,7 +818,7 @@ export default function ClientProfile() {
 									type="text"
 									value={transferReferenceText}
 									onChange={(event) => updateTransferReferenceText(event.target.value)}
-									placeholder="2026/11/05 رقم : 02 / م.و.أ.ط/ 2026"
+									placeholder="رقم الطلب"
 								/>
 							</label>
 							<label className="document-preview-field">
@@ -814,7 +827,7 @@ export default function ClientProfile() {
 									type="text"
 									value={transferFrom}
 									onChange={(event) => setTransferFrom(event.target.value || 'بوطيبة محمد')}
-									placeholder="بوطيبة محمد"
+									placeholder="اسم المدرسة الأصلية"
 								/>
 							</label>
 							<label className="document-preview-field">
@@ -823,7 +836,16 @@ export default function ClientProfile() {
 									type="text"
 									value={transferTo}
 									onChange={(event) => setTransferTo(event.target.value)}
-									placeholder="دروش سعيد"
+									placeholder="اسم المدرسة المستهدفة"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>أسباب التحويل</span>
+								<input
+									type="text"
+									value={transferReason}
+									onChange={(event) => setTransferReason(event.target.value)}
+									placeholder="أدخل سبب التحويل"
 								/>
 							</label>
 							<label className="document-preview-field">
@@ -879,19 +901,91 @@ export default function ClientProfile() {
 			{isEvaluationModalOpen && currentClient && (
 				<DocumentPreviewModal
 					title={<><Icon name="document" size={20} /> بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</>}
-					summary={<>المترشح: <strong>{currentClient.name}</strong>{' • '}الصنف: <strong>{currentClient.training || 'B'}</strong></>}
+					summary={<>المترشح: <strong>{evaluationName || currentClient.name}</strong>{' • '}الصنف: <strong>{currentClient.training || 'B'}</strong></>}
+					controls={
+						<>
+							<label className="document-preview-field">
+								<span>الإسم واللقب</span>
+								<input
+									type="text"
+									value={evaluationName}
+									onChange={(event) => setEvaluationName(event.target.value)}
+									placeholder="الاسم الكامل"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>تاريخ ومكان الميلاد</span>
+								<input
+									type="text"
+									value={evaluationBirth}
+									onChange={(event) => setEvaluationBirth(event.target.value)}
+									placeholder="تاريخ ومكان الميلاد"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>العنوان</span>
+								<input
+									type="text"
+									value={evaluationAddress}
+									onChange={(event) => setEvaluationAddress(event.target.value)}
+									placeholder="العنوان الكامل"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>تاريخ التسجيل</span>
+								<input
+									type="text"
+									value={evaluationRegDate}
+									onChange={(event) => setEvaluationRegDate(event.target.value)}
+									placeholder="تاريخ التسجيل"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>تاريخ إيداع الملف</span>
+								<input
+									type="text"
+									value={evaluationSubDate}
+									onChange={(event) => setEvaluationSubDate(event.target.value)}
+									placeholder="تاريخ إيداع الملف"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>الولاية</span>
+								<input
+									type="text"
+									value={evaluationWilaya}
+									onChange={(event) => setEvaluationWilaya(event.target.value)}
+									placeholder="الولاية"
+								/>
+							</label>
+						</>
+					}
 					onClose={() => setIsEvaluationModalOpen(false)}
 					preview={
 						<iframe
 							ref={evaluationFrameRef}
-							srcDoc={getEvaluationCardHtml(currentClient)}
+							srcDoc={getEvaluationCardHtml(currentClient, {
+								name: evaluationName,
+								birth: evaluationBirth,
+								address: evaluationAddress,
+								registrationDate: evaluationRegDate,
+								submissionDate: evaluationSubDate,
+								wilaya: evaluationWilaya,
+							})}
 							style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
 							title="معاينة بطاقة تقييم المترشح"
 						/>
 					}
 					downloadLabel="تحميل بطاقة التقييم"
 					downloadTitle="تنزيل بطاقة التقييم كملف HTML قابل للطباعة"
-					onDownload={() => downloadEvaluationCard(currentClient)}
+					onDownload={() => downloadEvaluationCard(currentClient, {
+						name: evaluationName,
+						birth: evaluationBirth,
+						address: evaluationAddress,
+						registrationDate: evaluationRegDate,
+						submissionDate: evaluationSubDate,
+						wilaya: evaluationWilaya,
+					})}
 					printLabel="طباعة بطاقة التقييم"
 					onPrint={() => evaluationFrameRef.current?.contentWindow?.print()}
 				/>
