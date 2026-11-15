@@ -10,8 +10,12 @@ permissions:
 
 jobs:
   release:
-    name: Build & Publish Release
-    runs-on: ubuntu-latest
+    name: Build & Publish Release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout repository
@@ -27,16 +31,29 @@ jobs:
         run: npm ci
 
       - name: Sync version with tag
+        shell: bash
         run: |
           TAG_VERSION=${GITHUB_REF_NAME#v}
           echo "Setting package.json version to $TAG_VERSION"
           npm version $TAG_VERSION --no-git-tag-version --allow-same-version
 
       - name: Build & Publish Linux AppImage
+        if: matrix.os == 'ubuntu-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run desktop:build
           npx electron-builder --linux --publish always -c.publish.releaseType=release
+          gh release edit "$GITHUB_REF_NAME" --draft=false || true
+
+      - name: Build & Publish Windows Installer
+        if: matrix.os == 'windows-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          npm run desktop:build
+          npx electron-builder --win --publish always -c.publish.releaseType=release
           gh release edit "$GITHUB_REF_NAME" --draft=false || true
