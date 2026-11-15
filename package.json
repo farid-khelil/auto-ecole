@@ -91,7 +91,8 @@
     },
     "linux": {
       "target": ["AppImage"],
-      "category": "Office"
+      "category": "Office",
+      "artifactName": "Auto-Ecole-${version}.${ext}"
     },
     "publish": {
       "provider": "github",

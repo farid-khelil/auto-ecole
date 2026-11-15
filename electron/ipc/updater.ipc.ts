@@ -124,3 +124,10 @@ export function registerUpdaterIpc(getMainWindow?: () => BrowserWindow | undefin
     return app.getVersion();
   });
 }
+
+export function checkForUpdatesSilently() {
+  if (!app.isPackaged) return;
+  autoUpdater.checkForUpdates().catch((err) => {
+    console.log('[Updater] Background check skipped/error:', err?.message || err);
+  });
+}

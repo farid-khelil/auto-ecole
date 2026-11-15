@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { initializeDatabase } from './database/sqlite.js';
 import { registerClientIpc } from './ipc/client.ipc.js';
-import { registerUpdaterIpc } from './ipc/updater.ipc.js';
+import { registerUpdaterIpc, checkForUpdatesSilently } from './ipc/updater.ipc.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +39,12 @@ app.whenReady().then(() => {
   registerClientIpc();
   registerUpdaterIpc(() => mainWindow);
   createWindow();
+
+  if (app.isPackaged) {
+    setTimeout(() => {
+      checkForUpdatesSilently();
+    }, 3000);
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
