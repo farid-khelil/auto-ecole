@@ -2,8 +2,8 @@ import React, { FormEvent, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar.tsx';
 import Icon from '../components/Icon.tsx';
-import { clientService, TRAINING_STAGES } from '../services/clients';
-import { printMedicalCertificate } from '../services/medical-cert';
+import { clientService, TRAINING_STAGES, type Client } from '../services/clients';
+import { getMedicalCertificateHtml } from '../services/medical-cert-letter';
 import '../styles/add-client.css';
 
 const clientDocuments = [
@@ -128,19 +128,57 @@ export default function AddClient() {
 		setMedicalCertificateFeedback('');
 		setIsGeneratingMedicalCertificate(true);
 		try {
-			await printMedicalCertificate({
-				firstName,
-				lastName,
+			const dummyClient: Partial<Client> = {
+				name: `${lastName} ${firstName}`,
 				birthDate: String(formData.get('birthDate') || ''),
 				birthPlace: String(formData.get('birthPlace') || ''),
 				address: String(formData.get('address') || ''),
 				phone: String(formData.get('phone') || ''),
 				email: String(formData.get('email') || ''),
+				training: String(formData.get('training') || 'B'),
+				photo,
+			};
+
+			const html = getMedicalCertificateHtml(dummyClient, {
+				lastName,
+				firstName,
+				birthDate: dummyClient.birthDate,
+				birthPlace: dummyClient.birthPlace,
+				address: dummyClient.address,
+				phone: dummyClient.phone,
+				email: dummyClient.email,
+				targetCategory: dummyClient.training,
+				photo,
 			});
-			setMedicalCertificateFeedback('تم إنشاء الشهادة الطبية. يمكنك طباعتها من علامة التبويب الجديدة.');
+
+			const iframe = document.createElement('iframe');
+			iframe.style.position = 'fixed';
+			iframe.style.right = '0';
+			iframe.style.bottom = '0';
+			iframe.style.width = '0';
+			iframe.style.height = '0';
+			iframe.style.border = '0';
+			document.body.appendChild(iframe);
+			iframe.srcdoc = html;
+			iframe.onload = () => {
+				setTimeout(() => {
+					try {
+						iframe.contentWindow?.focus();
+						iframe.contentWindow?.print();
+					} finally {
+						setTimeout(() => {
+							if (iframe.parentNode) {
+								iframe.parentNode.removeChild(iframe);
+							}
+						}, 2000);
+					}
+				}, 250);
+			};
+
+			setMedicalCertificateFeedback('تم إرسال الشهادة الطبية للطباعة بنجاح.');
 		} catch (error) {
 			console.error('Error generating medical certificate PDF:', error);
-			setMedicalCertificateFeedback('تعذر إنشاء الشهادة الطبية. تأكد من توفر قالب الشهادة والخط ثم حاول مجدداً.');
+			setMedicalCertificateFeedback('تعذر إنشاء الشهادة الطبية. حاول مجدداً.');
 		} finally {
 			setIsGeneratingMedicalCertificate(false);
 		}

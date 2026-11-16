@@ -20,7 +20,8 @@ export type ProfileHeaderProps = {
   onStartEditing: () => void;
   onSaveChanges: () => void;
   onCancelEdit: () => void;
-  onPrintMedicalCert: () => void;
+  onPrintMedicalCert?: () => void;
+  onOpenMedicalCertModal?: () => void;
   onOpenConvocationModal: () => void;
   onOpenTransferModal: () => void;
   onOpenEvaluationCardModal: () => void;
@@ -45,6 +46,7 @@ export default function ProfileHeader({
   onSaveChanges,
   onCancelEdit,
   onPrintMedicalCert,
+  onOpenMedicalCertModal,
   onOpenConvocationModal,
   onOpenTransferModal,
   onOpenEvaluationCardModal,
@@ -214,8 +216,8 @@ export default function ProfileHeader({
           <button
             className="button"
             type="button"
-            title="طباعة الشهادة الطبية"
-            onClick={onPrintMedicalCert}
+            title="معاينة وطباعة الشهادة الطبية"
+            onClick={onOpenMedicalCertModal || onPrintMedicalCert}
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Icon name="print" size={17} /> شهادة طبية

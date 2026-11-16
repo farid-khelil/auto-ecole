@@ -8,6 +8,7 @@ import ProfileMainContent, { type HistoryFilter } from '../components/client-pro
 import { clientService, TRAINING_STAGES, type Client } from '../services/clients';
 import { createInitialAttendanceCard, getLatestExam, type AttendanceCard as AttendanceCardType } from '../services/attendance';
 import { printMedicalCertificate } from '../services/medical-cert';
+import { getMedicalCertificateHtml, downloadMedicalCertificateHtml } from '../services/medical-cert-letter';
 import { getConvocationLetterHtml, downloadConvocationLetter, hourToArabic } from '../services/convocation-letter';
 import { getTransferRequestHtml, downloadTransferRequest, splitClientName } from '../services/transfer-request';
 import { getEvaluationCardHtml, downloadEvaluationCard, formatEvaluationBirth, formatEvaluationDate } from '../services/evaluation-card';
@@ -130,6 +131,21 @@ export default function ClientProfile() {
 	const [transferRegNum, setTransferRegNum] = useState('');
 	const [transferReason, setTransferReason] = useState('');
 	const [transferDate, setTransferDate] = useState(() => new Date().toISOString().slice(0, 10));
+
+	// Medical Certificate (شهادة طبية) State
+	const medicalFrameRef = useRef<HTMLIFrameElement>(null);
+	const [isMedicalModalOpen, setIsMedicalModalOpen] = useState(false);
+	const [medicalLastName, setMedicalLastName] = useState('');
+	const [medicalFirstName, setMedicalFirstName] = useState('');
+	const [medicalBirthDate, setMedicalBirthDate] = useState('');
+	const [medicalBirthPlace, setMedicalBirthPlace] = useState('');
+	const [medicalAddress, setMedicalAddress] = useState('');
+	const [medicalPhone, setMedicalPhone] = useState('');
+	const [medicalEmail, setMedicalEmail] = useState('');
+	const [medicalCategory, setMedicalCategory] = useState('B');
+	const [medicalWilaya, setMedicalWilaya] = useState('المدية');
+	const [medicalDaira, setMedicalDaira] = useState('عين بوسيف');
+	const [medicalBaladia, setMedicalBaladia] = useState('عين بوسيف');
 
 	// Evaluation Card (بطاقة تقييم) State
 	const evaluationFrameRef = useRef<HTMLIFrameElement>(null);
@@ -403,6 +419,23 @@ export default function ClientProfile() {
 		}
 	}
 
+	function handleOpenMedicalModal() {
+		if (!currentClient) return;
+		const { lastName, firstName } = splitClientName(currentClient.name || '');
+		setMedicalLastName(lastName);
+		setMedicalFirstName(firstName);
+		setMedicalBirthDate(currentClient.birthDate ? currentClient.birthDate.replace(/-/g, '/') : '');
+		setMedicalBirthPlace(currentClient.birthPlace || '');
+		setMedicalAddress(currentClient.address || '');
+		setMedicalPhone(currentClient.phone || '');
+		setMedicalEmail(currentClient.email || '');
+		setMedicalCategory(currentClient.training || 'B');
+		setMedicalWilaya('المدية');
+		setMedicalDaira('عين بوسيف');
+		setMedicalBaladia('عين بوسيف');
+		setIsMedicalModalOpen(true);
+	}
+
 	async function handlePrintMedicalCert() {
 		try {
 			const fullName = (currentClient.name || '').trim();
@@ -544,6 +577,7 @@ export default function ClientProfile() {
 					onSaveChanges={saveChanges}
 					onCancelEdit={cancelEdit}
 					onPrintMedicalCert={handlePrintMedicalCert}
+					onOpenMedicalCertModal={handleOpenMedicalModal}
 					onOpenConvocationModal={handleOpenConvocationModal}
 					onOpenTransferModal={handleOpenTransferModal}
 					onOpenEvaluationCardModal={handleOpenEvaluationModal}
@@ -988,6 +1022,155 @@ export default function ClientProfile() {
 					})}
 					printLabel="طباعة بطاقة التقييم"
 					onPrint={() => evaluationFrameRef.current?.contentWindow?.print()}
+				/>
+			)}
+
+			{/* Medical Certificate (شهادة طبية) Modal */}
+			{isMedicalModalOpen && currentClient && (
+				<DocumentPreviewModal
+					title={<><Icon name="print" size={20} /> شهادة طبية لطلب رخصة سياقة</>}
+					summary={<>المترشح: <strong>{medicalLastName} {medicalFirstName}</strong>{' • '}الصنف: <strong>{medicalCategory || 'B'}</strong></>}
+					controls={
+						<>
+							<label className="document-preview-field">
+								<span>اللقب</span>
+								<input
+									type="text"
+									value={medicalLastName}
+									onChange={(event) => setMedicalLastName(event.target.value)}
+									placeholder="اللقب"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>الإسم</span>
+								<input
+									type="text"
+									value={medicalFirstName}
+									onChange={(event) => setMedicalFirstName(event.target.value)}
+									placeholder="الإسم"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>تاريخ الميلاد</span>
+								<input
+									type="text"
+									value={medicalBirthDate}
+									onChange={(event) => setMedicalBirthDate(event.target.value)}
+									placeholder="YYYY/MM/DD"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>مكان الميلاد</span>
+								<input
+									type="text"
+									value={medicalBirthPlace}
+									onChange={(event) => setMedicalBirthPlace(event.target.value)}
+									placeholder="مكان الميلاد"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>العنوان</span>
+								<input
+									type="text"
+									value={medicalAddress}
+									onChange={(event) => setMedicalAddress(event.target.value)}
+									placeholder="العنوان الكامل"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>رقم الهاتف</span>
+								<input
+									type="text"
+									value={medicalPhone}
+									onChange={(event) => setMedicalPhone(event.target.value)}
+									placeholder="رقم الهاتف"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>البريد الإلكتروني</span>
+								<input
+									type="text"
+									value={medicalEmail}
+									onChange={(event) => setMedicalEmail(event.target.value)}
+									placeholder="البريد الإلكتروني"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>الصنف المراد الحصول عليه</span>
+								<input
+									type="text"
+									value={medicalCategory}
+									onChange={(event) => setMedicalCategory(event.target.value)}
+									placeholder="الصنف (مثلاً B)"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>الولاية</span>
+								<input
+									type="text"
+									value={medicalWilaya}
+									onChange={(event) => setMedicalWilaya(event.target.value)}
+									placeholder="الولاية"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>الدائرة</span>
+								<input
+									type="text"
+									value={medicalDaira}
+									onChange={(event) => setMedicalDaira(event.target.value)}
+									placeholder="الدائرة"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>البلدية</span>
+								<input
+									type="text"
+									value={medicalBaladia}
+									onChange={(event) => setMedicalBaladia(event.target.value)}
+									placeholder="البلدية"
+								/>
+							</label>
+						</>
+					}
+					onClose={() => setIsMedicalModalOpen(false)}
+					preview={
+						<iframe
+							ref={medicalFrameRef}
+							srcDoc={getMedicalCertificateHtml(currentClient, {
+								lastName: medicalLastName,
+								firstName: medicalFirstName,
+								birthDate: medicalBirthDate,
+								birthPlace: medicalBirthPlace,
+								address: medicalAddress,
+								phone: medicalPhone,
+								email: medicalEmail,
+								targetCategory: medicalCategory,
+								wilaya: medicalWilaya,
+								daira: medicalDaira,
+								baladia: medicalBaladia,
+							})}
+							style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+							title="معاينة الشهادة الطبية"
+						/>
+					}
+					downloadLabel="تحميل الشهادة الطبية"
+					downloadTitle="تنزيل الشهادة الطبية كملف HTML قابل للطباعة"
+					onDownload={() => downloadMedicalCertificateHtml(currentClient, {
+						lastName: medicalLastName,
+						firstName: medicalFirstName,
+						birthDate: medicalBirthDate,
+						birthPlace: medicalBirthPlace,
+						address: medicalAddress,
+						phone: medicalPhone,
+						email: medicalEmail,
+						targetCategory: medicalCategory,
+						wilaya: medicalWilaya,
+						daira: medicalDaira,
+						baladia: medicalBaladia,
+					})}
+					printLabel="طباعة الشهادة الطبية"
+					onPrint={() => medicalFrameRef.current?.contentWindow?.print()}
 				/>
 			)}
 		</main>

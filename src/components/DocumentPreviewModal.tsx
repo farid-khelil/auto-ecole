@@ -18,7 +18,7 @@ interface DocumentPreviewModalProps {
   closeLabel?: string;
 }
 
-/** Shared full-screen preview shell for printable and downloadable documents. */
+/** Full-screen preview page for printable and downloadable documents. */
 export default function DocumentPreviewModal({
   title,
   summary,
@@ -33,67 +33,22 @@ export default function DocumentPreviewModal({
   printLabel,
   onPrint,
   onClose,
-  closeLabel = 'إغلاق',
+  closeLabel = 'رجوع',
 }: DocumentPreviewModalProps) {
   return (
-    <div className="candidates-modal-overlay" onClick={onClose}>
-      <section
-        className="candidates-modal-card"
-        style={{
-          maxWidth: '1050px',
-          width: '95vw',
-          height: '92vh',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-        role="dialog"
-        aria-modal="true"
-        aria-label={typeof title === 'string' ? title : 'معاينة المستند'}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <header className="candidates-modal-header" style={{ padding: '14px 20px' }}>
-          <div>
-            <h2>{title}</h2>
-            {summary && <p>{summary}</p>}
-            {controls && <div className="document-preview-controls">{controls}</div>}
-          </div>
-          <button type="button" className="btn-close-modal" onClick={onClose} aria-label="إغلاق">
-            <Icon name="close" size={18} />
-          </button>
-        </header>
+    <div className="document-preview-page">
+      <header className="document-preview-page-header">
+        <button type="button" className="document-preview-back-btn" onClick={onClose} aria-label="رجوع">
+          <Icon name="arrow" size={18} />
+          <span>{closeLabel}</span>
+        </button>
 
-        <div
-          className="candidates-modal-body"
-          style={{
-            flex: 1,
-            padding: 0,
-            background: 'var(--bg-card-alt)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
-          {preview}
+        <div className="document-preview-page-title">
+          <h2>{title}</h2>
+          {summary && <p>{summary}</p>}
         </div>
 
-        <footer
-          className="candidates-modal-footer document-preview-footer"
-          style={{
-            padding: '12px 20px',
-            borderTop: '1px solid var(--border-card)',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '10px',
-          }}
-        >
-          <button
-            type="button"
-            className="btn-cancel"
-            style={{ width: 'auto', padding: '0 16px', height: '38px' }}
-            onClick={onClose}
-          >
-            {closeLabel}
-          </button>
+        <div className="document-preview-page-actions">
           {secondaryDownloadLabel && onSecondaryDownload && (
             <button
               type="button"
@@ -119,8 +74,23 @@ export default function DocumentPreviewModal({
           >
             <Icon name="print" size={17} /> {printLabel}
           </button>
-        </footer>
-      </section>
+        </div>
+      </header>
+
+      <div className="document-preview-page-content">
+        <div className="document-preview-page-body">
+          {preview}
+        </div>
+
+        {controls && (
+          <aside className="document-preview-page-sidebar">
+            <h3>إعدادات المستند</h3>
+            <div className="document-preview-sidebar-fields">
+              {controls}
+            </div>
+          </aside>
+        )}
+      </div>
     </div>
   );
 }
