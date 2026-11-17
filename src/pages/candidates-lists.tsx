@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar.tsx';
 import Icon from '../components/Icon.tsx';
+import DocumentPreviewModal from '../components/DocumentPreviewModal.tsx';
 import { clientService, type Client } from '../services/clients';
 import { candidatesListService, type CandidatesListRecord } from '../services/candidates-lists';
 import { generateFilledXlsx } from '../services/xlsx-generator';
-import { printCandidatesListPdf, downloadCandidatesListPdf, generateCandidatesListPdf } from '../services/candidates-pdf';
+import { downloadCandidatesListPdf, generateCandidatesListPdf } from '../services/candidates-pdf';
 import { matchesArabicSearch } from '../services/arabic-search';
 import '../styles/candidates-list.css';
 
@@ -66,36 +67,40 @@ export default function CandidatesListsPage() {
   const [viewingList, setViewingList] = useState<CandidatesListRecord | null>(null);
   const [viewingPdfUrl, setViewingPdfUrl] = useState<string | null>(null);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const model02FrameRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    let isCurrent = true;
+    let generatedUrl: string | null = null;
+
+    setViewingPdfUrl(null);
     if (!viewingList) {
-      if (viewingPdfUrl) {
-        URL.revokeObjectURL(viewingPdfUrl);
-        setViewingPdfUrl(null);
-      }
-      return;
+      setIsPdfLoading(false);
+      return () => {
+        isCurrent = false;
+      };
     }
 
-    let isMounted = true;
     setIsPdfLoading(true);
 
     generateCandidatesListPdf(viewingList, lists, allClients)
       .then((pdfBytes) => {
-        if (!isMounted) return;
+        if (!isCurrent) return;
         const blob = new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
-        setViewingPdfUrl(url);
+        generatedUrl = URL.createObjectURL(blob);
+        setViewingPdfUrl(generatedUrl);
         setIsPdfLoading(false);
       })
       .catch((err) => {
         console.error("Failed to generate PDF for preview:", err);
-        if (isMounted) setIsPdfLoading(false);
+        if (isCurrent) setIsPdfLoading(false);
       });
 
     return () => {
-      isMounted = false;
+      isCurrent = false;
+      if (generatedUrl) URL.revokeObjectURL(generatedUrl);
     };
-  }, [viewingList]);
+  }, [viewingList, lists, allClients]);
 
   useEffect(() => {
     void loadData();
@@ -693,136 +698,51 @@ return (
         </div>
       )}
 
-      {/* MODAL 2: View & Print Saved List */}
+      {/* Keep the official PDF in Electron's in-app preview; do not open blob URLs in another window. */}
       {viewingList && (
-        <div className="candidates-modal-overlay" onClick={() => setViewingList(null)}>
-          <div
-            className="candidates-modal-card"
-            style={{ maxWidth: "1050px", width: "95vw", height: "92vh", display: "flex", flexDirection: "column" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="candidates-modal-header" style={{ padding: "14px 20px" }}>
-              <div>
-                <h2>
-                  <Icon name="document" size={20} /> النموذج رقم 02: قائمة المترشحين
-                </h2>
-                <p>
-                  <strong>{formatDate(viewingList.depositDate)}</strong>
-                  {viewingList.examDate && (
-                    <> • تاريخ الامتحان: <strong>{formatDate(viewingList.examDate)}</strong></>
-                  )}
-                  {" "}• عدد المترشحين: <strong>{viewingList.candidates.length}</strong>
-                </p>
-              </div>
-              <button
-                type="button"
-                className="btn-close-modal"
-                onClick={() => setViewingList(null)}
-              >
-                <Icon name="close" size={18} />
-              </button>
+        <DocumentPreviewModal
+          title={<><Icon name="document" size={20} /> النموذج رقم 02: قائمة المترشحين</>}
+          summary={
+            <>
+              <strong>{formatDate(viewingList.depositDate)}</strong>
+              {viewingList.examDate && <> • تاريخ الامتحان: <strong>{formatDate(viewingList.examDate)}</strong></>}{' '}
+              • عدد المترشحين: <strong>{viewingList.candidates.length}</strong>
+            </>
+          }
+          onClose={() => setViewingList(null)}
+          preview={isPdfLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#fff', fontSize: '15px', fontWeight: 700 }}>
+              جاري تجهيز وعرض النموذج رقم 02 الرسمي...
             </div>
-
-            <div
-              className="candidates-modal-body"
-              style={{
-                flex: 1,
-                padding: 0,
-                background: "#2e3235",
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-              }}
-            >
-              {isPdfLoading ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "#fff", fontSize: "15px", fontWeight: 700 }}>
-                  جاري تجهيز وعرض النموذج رقم 02 الرسمي...
-                </div>
-              ) : viewingPdfUrl ? (
-                <iframe
-                  src={viewingPdfUrl}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    border: "none",
-                    display: "block",
-                  }}
-                  title="معاينة النموذج رقم 02"
-                />
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "#ffb4ab", fontSize: "14px" }}>
-                  حدث خطأ أثناء تحميل معاينة النموذج.
-                </div>
-              )}
+          ) : viewingPdfUrl ? (
+            <iframe ref={model02FrameRef} src={viewingPdfUrl} style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} title="معاينة النموذج رقم 02" />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#ffb4ab', fontSize: '14px' }}>
+              حدث خطأ أثناء تحميل معاينة النموذج.
             </div>
-
-            <div
-              className="candidates-modal-footer"
-              style={{
-                padding: "12px 20px",
-                borderTop: "1px solid #e5e7eb",
-                background: "#fff",
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "10px",
-              }}
-            >
-              <button
-                type="button"
-                className="btn-cancel"
-                style={{ width: "auto", padding: "0 16px", height: "38px" }}
-                onClick={() => setViewingList(null)}
-              >
-                إغلاق
-              </button>
-              <button
-                type="button"
-                className="btn-print-list"
-                style={{ background: "#1d6f42" }}
-                onClick={async () => {
-                  try {
-                    await generateFilledXlsx(viewingList);
-                  } catch (err) {
-                    console.error("Error generating xlsx:", err);
-                    alert("حدث خطأ أثناء توليد ملف Excel");
-                  }
-                }}
-              >
-                <Icon name="download" size={17} /> تحميل Excel
-              </button>
-              <button
-                type="button"
-                className="btn-print-list"
-                style={{ background: "#b3261e" }}
-                onClick={async () => {
-                  try {
-                    await downloadCandidatesListPdf(viewingList, lists, allClients);
-                  } catch (err) {
-                    console.error("Error downloading pdf:", err);
-                    alert("حدث خطأ أثناء تحميل ملف PDF");
-                  }
-                }}
-              >
-                <Icon name="download" size={17} /> تحميل PDF (النموذج 02)
-              </button>
-              <button
-                type="button"
-                className="btn-print-list"
-                style={{ background: "#674fd7" }}
-                onClick={async () => {
-                  try {
-                    await printCandidatesListPdf(viewingList, lists, allClients);
-                  } catch (err) {
-                    console.error("Error printing pdf:", err);
-                    alert("حدث خطأ أثناء فتح الطباعة");
-                  }
-                }}
-              >
-                <Icon name="print" size={17} /> طباعة القائمة الرسمية (PDF)
-              </button>
-            </div>
-          </div>
-        </div>
+          )}
+          secondaryDownloadLabel="تحميل Excel (.xlsx)"
+          secondaryDownloadTitle="تحميل القائمة كملف إكسل مطابق للنموذج الرسمي"
+          onSecondaryDownload={async () => {
+            try {
+              await generateFilledXlsx(viewingList, lists, allClients);
+            } catch (err) {
+              console.error('Error generating xlsx:', err);
+              alert('حدث خطأ أثناء توليد ملف Excel');
+            }
+          }}
+          downloadLabel="تحميل النموذج 02 (PDF)"
+          onDownload={async () => {
+            try {
+              await downloadCandidatesListPdf(viewingList, lists, allClients);
+            } catch (err) {
+              console.error('Error downloading pdf:', err);
+              alert('حدث خطأ أثناء تحميل ملف PDF');
+            }
+          }}
+          printLabel="طباعة النموذج 02"
+          onPrint={() => model02FrameRef.current?.contentWindow?.print()}
+        />
       )}
     </main>
   );

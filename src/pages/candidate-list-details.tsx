@@ -210,32 +210,35 @@ export default function CandidateListDetailsPage() {
 
   // Handle PDF generation when opening the file modal
   useEffect(() => {
+    let isCurrent = true;
+    let generatedUrl: string | null = null;
+
+    setViewingPdfUrl(null);
     if (activePreview !== 'model02' || !list) {
-      if (viewingPdfUrl) {
-        URL.revokeObjectURL(viewingPdfUrl);
-        setViewingPdfUrl(null);
-      }
-      return;
+      setIsPdfLoading(false);
+      return () => {
+        isCurrent = false;
+      };
     }
 
-    let isMounted = true;
     setIsPdfLoading(true);
 
     generateCandidatesListPdf(list, allLists, allClients)
       .then((pdfBytes) => {
-        if (!isMounted) return;
+        if (!isCurrent) return;
         const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        setViewingPdfUrl(url);
+        generatedUrl = URL.createObjectURL(blob);
+        setViewingPdfUrl(generatedUrl);
         setIsPdfLoading(false);
       })
       .catch((err) => {
         console.error('Failed to generate PDF for preview:', err);
-        if (isMounted) setIsPdfLoading(false);
+        if (isCurrent) setIsPdfLoading(false);
       });
 
     return () => {
-      isMounted = false;
+      isCurrent = false;
+      if (generatedUrl) URL.revokeObjectURL(generatedUrl);
     };
   }, [activePreview, list, allLists, allClients]);
 

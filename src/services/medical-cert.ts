@@ -1,6 +1,7 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { ArabicShaper } from 'arabic-persian-reshaper';
+import { appAssetUrl } from './app-assets';
 
 export interface MedicalCertData {
   firstName: string;   // الإسم
@@ -12,9 +13,10 @@ export interface MedicalCertData {
   email: string;       // البريد الإلكتروني
 }
 
-export async function printMedicalCertificate(data: MedicalCertData): Promise<void> {
+/** Generates the certificate used before the v1.2.2 HTML-template change. */
+export async function generateMedicalCertificatePdf(data: MedicalCertData): Promise<Uint8Array> {
   // Load the PDF template
-  const templateUrl = '/medical-cert-template.pdf';
+  const templateUrl = appAssetUrl('medical-cert-template.pdf');
   const existingPdfBytes = await fetch(templateUrl).then((res) => {
     if (!res.ok) throw new Error('فشل تحميل قالب الشهادة الطبية');
     return res.arrayBuffer();
@@ -24,7 +26,7 @@ export async function printMedicalCertificate(data: MedicalCertData): Promise<vo
   pdfDoc.registerFontkit(fontkit);
 
   // Load NotoSansArabic-Bold to render Arabic letters in bold and joined (connected)
-  const arabicFontBytes = await fetch('/fonts/NotoSansArabic-Bold.ttf').then((res) => {
+  const arabicFontBytes = await fetch(appAssetUrl('fonts/NotoSansArabic-Bold.ttf')).then((res) => {
     if (!res.ok) throw new Error('فشل تحميل الخط العربي');
     return res.arrayBuffer();
   });
@@ -71,11 +73,10 @@ export async function printMedicalCertificate(data: MedicalCertData): Promise<vo
   }
 
   // 3: Date of birth -> X: 435, Y: 668
-  const formattedDate = data.birthDate
-    ? data.birthDate.includes('-')
-      ? data.birthDate.split('-').reverse().join('/')
-      : data.birthDate
-    : '';
+  const birthDateParts = data.birthDate ? data.birthDate.split(/[-/]/) : [];
+  const formattedDate = birthDateParts.length === 3 && birthDateParts[0].length === 4
+    ? birthDateParts.reverse().join('/')
+    : data.birthDate || '';
 
   if (formattedDate) {
     const dateWidth = latinBoldFont.widthOfTextAtSize(formattedDate, latinSize);
@@ -122,13 +123,52 @@ export async function printMedicalCertificate(data: MedicalCertData): Promise<vo
     });
   }
 
-  const pdfBytes = await pdfDoc.save();
+  return await pdfDoc.save();
+}
+
+/** Opens the native print dialog without creating a separate Electron window. */
+export async function printMedicalCertificate(data: MedicalCertData): Promise<void> {
+  const pdfBytes = await generateMedicalCertificatePdf(data);
   const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
 
-  // Open in a new tab for preview and printing
-  const newTab = window.open(url, '_blank');
-  if (newTab) {
-    newTab.focus();
-  }
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(iframe);
+  iframe.src = url;
+
+  await new Promise<void>((resolve, reject) => {
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        window.setTimeout(resolve, 250);
+      } catch (error) {
+        reject(error);
+      } finally {
+        window.setTimeout(() => {
+          iframe.remove();
+          URL.revokeObjectURL(url);
+        }, 2000);
+      }
+    };
+    iframe.onerror = () => {
+      iframe.remove();
+      URL.revokeObjectURL(url);
+      reject(new Error('تعذر تحميل الشهادة الطبية للطباعة'));
+    };
+  });
+}
+
+/** Downloads the original medical-certificate PDF. */
+export async function downloadMedicalCertificatePdf(data: MedicalCertData): Promise<void> {
+  const pdfBytes = await generateMedicalCertificatePdf(data);
+  const url = URL.createObjectURL(new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `شهادة-طبية-${[data.lastName, data.firstName].filter(Boolean).join('-') || 'مترشح'}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
 }

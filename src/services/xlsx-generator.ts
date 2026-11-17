@@ -7,6 +7,7 @@ import {
   getCurrentCandidates,
 } from './candidates-lists';
 import { clientService, type Client } from './clients';
+import { appAssetUrl } from './app-assets';
 
 /**
  * Generates a filled النموذج رقم 02 (.xlsx) by modifying the raw XML
@@ -33,7 +34,8 @@ export async function generateFilledXlsx(
       ? allClients
       : await clientService.list().catch(() => []);
   // 1. Fetch and unzip the template
-  const response = await fetch('/model-02-template.xlsx');
+  const response = await fetch(appAssetUrl('model-02-template.xlsx'));
+  if (!response.ok) throw new Error('فشل تحميل قالب النموذج رقم 02 (Excel)');
   const templateBuffer = await response.arrayBuffer();
   const zip = await JSZip.loadAsync(templateBuffer);
 

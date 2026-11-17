@@ -15,7 +15,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     direction: rtl;
     -webkit-font-smoothing: antialiased;
   }
@@ -23,7 +22,6 @@
   /* ---------- Page (A4) ---------- */
   .page {
     width: 210mm;
-    min-height: 297mm;
     height: 297mm;
     margin: 0 auto;
     background: #fff;
@@ -32,272 +30,238 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.35);
     transform-origin: top center;
     transform: scale(var(--fit));
-    font-family: "Traditional Arabic", "Simplified Arabic", "Arabic Typesetting", "Amiri", "Noto Naskh Arabic", "Times New Roman", serif;
+    /* The scan is Arial Bold (sans-serif) */
+    font-family: Arial, "Arimo", "Liberation Sans", Tahoma, "Segoe UI", "Noto Sans Arabic", sans-serif;
     font-weight: 700;
     color: #000;
     direction: rtl;
-    padding: 13mm 16mm 10mm 16mm;
-    box-sizing: border-box;
+  }
+  .abs { position: absolute; }
+  .fit { display: inline-block; white-space: nowrap; }
+
+  .u {
+    text-decoration: underline;
+    text-underline-offset: 1.1mm;
+    text-decoration-thickness: 0.5mm;
+    text-decoration-skip-ink: none;
   }
 
-  .u { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+  /* One text line, vertically centred on a given y (set inline as --y) */
+  .line {
+    position: absolute;
+    height: 8mm;
+    top: calc(var(--y) - 4mm);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
 
   /* ---------- Header ---------- */
-  .republic {
-    text-align: center;
-    font-size: 15pt;
-    margin: 0 0 3.5mm 0;
-    font-weight: bold;
-  }
+  .republic { left: 2mm; right: 0; justify-content: center; font-size: 14pt; }
+  .ministry { right: 8.2mm; font-size: 12pt; }
+  .title    { left: 10.9mm; right: 0; justify-content: center; font-size: 15.5pt; }
 
-  .ministry {
-    text-align: right;
-    font-size: 11.5pt;
-    line-height: 1.6;
-    margin-bottom: 3.5mm;
-    font-weight: bold;
-  }
-
-  .title {
-    text-align: center;
-    font-size: 15pt;
-    margin-bottom: 5mm;
-    font-weight: bold;
-  }
-  .title span {
-    text-decoration: underline;
-    text-underline-offset: 6px;
-    text-decoration-thickness: 2px;
-  }
-
-  /* ---------- Candidate Fields ---------- */
-  .fields-section {
-    margin-bottom: 5mm;
-    font-size: 12.5pt;
-  }
-  .field-row {
-    display: flex;
-    align-items: baseline;
-    height: 7mm;
-    line-height: 7mm;
-  }
-  .field-label {
-    width: 88mm;
-    flex-shrink: 0;
-    white-space: nowrap;
-    font-weight: bold;
-  }
-  .colon {
-    width: 4mm;
-    flex-shrink: 0;
-    text-align: center;
-    font-weight: bold;
-  }
-  .field-value {
-    flex: 1;
-    min-width: 0;
-    font-weight: bold;
+  /* ---------- Candidate fields ---------- */
+  .fr { right: 8.4mm; left: 12mm; font-size: 12.5pt; }
+  .fr .colon { margin-right: 1.8mm; }
+  .fr .colon.stuck { display: none; }
+  .fr .val {
+    flex: 1; min-width: 0;
     padding-right: 3mm;
-    white-space: nowrap;
+    outline: none;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  /* ---------- Assessment Table ---------- */
+  /* ---------- Table ---------- */
   .eval-table {
-    width: 100%;
+    top: 112mm;
+    right: 6.7mm;
+    width: 190.9mm;
+    height: 126mm;
     border-collapse: collapse;
-    border: 2px solid #000;
-    margin-bottom: 8mm;
+    border: 0.7mm solid #000;
+    table-layout: fixed;
   }
   .eval-table th, .eval-table td {
-    border: 1.5px solid #000;
+    border: 0.6mm solid #000;
     vertical-align: middle;
-  }
-  .eval-table th {
-    height: 12mm;
-    font-size: 13.5pt;
-    font-weight: bold;
+    padding: 0;
     text-align: center;
-    background: transparent;
   }
-  .th-eval { width: 55%; }
-  .th-notes { width: 45%; }
+  .eval-table thead tr { height: 16.8mm; }
+  .eval-table tbody tr { height: 36.4mm; }
+  .eval-table th, .td-stage { font-size: 11pt; }
+  .col-stage { width: 62.6mm; }
+  .col-eval  { width: 62.6mm; }
+  .col-notes { width: 65.7mm; }
 
-  .eval-table tbody tr {
-    height: 35mm;
-  }
-  .td-stage {
-    width: 25%;
-    text-align: center;
-    font-size: 13.5pt;
-    font-weight: bold;
-    padding: 0 4mm;
-  }
-  .td-dots-eval {
-    width: 30%;
-    padding: 2mm 5mm;
-  }
-  .td-dots-notes {
-    width: 45%;
-    padding: 2mm 5mm;
-  }
+  .dots { position: relative; height: 36.4mm; }
   .dot-line {
-    height: 9.5mm;
-    border-bottom: 2px dotted #000;
+    position: absolute;
+    height: 0;
+    border-bottom: 0.32mm dotted #000;
   }
+  .dots .l1 { top: 9.0mm; }
+  .dots .l2 { top: 18.8mm; }
+  .dots .l3 { top: 28.7mm; }
+  .dots.ev .dot-line { right: 2.4mm; left: 11.5mm; }
+  .dots.nt .dot-line { right: 1.6mm; left: 14.5mm; }
 
   /* ---------- Footer ---------- */
-  .footer-section {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13pt;
-    font-weight: bold;
-    padding: 0 16mm;
-    margin-top: 6mm;
-  }
+  .footer-trainer { right: 21.8mm; font-size: 12pt; }
+  .footer-school  { left: 29.4mm;  font-size: 12pt; }
 
   @media print {
-    html, body {
-      background: #fff !important;
-      padding: 0 !important;
-      margin: 0 !important;
-    }
+    html, body { background: #fff !important; padding: 0 !important; margin: 0 !important; display: block !important; }
     .page {
-      margin: 0 !important;
-      box-shadow: none !important;
-      transform: none !important;
-      width: 210mm !important;
-      height: 297mm !important;
-      min-height: 297mm !important;
-      max-height: 297mm !important;
-      page-break-after: avoid !important;
-      page-break-inside: avoid !important;
+      margin: 0 !important; box-shadow: none !important; transform: none !important;
+      width: 210mm !important; height: 297mm !important;
+      page-break-after: avoid !important; page-break-inside: avoid !important;
     }
   }
 </style>
 </head>
 <body>
 
-<div class="page">
-  <div class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+<div class="page" id="page">
 
-  <div class="ministry">
-    <div><span class="u">وزارة الداخلية والجماعات المحلية والتهيئة العمرانية</span></div>
-    <div><span class="u">المندوبية الوطنية للأمن في الطرق</span></div>
-    <div><span class="u">المندوبية الولائية للأمن في الطرق</span></div>
-    <div><span class="u">لـــــــــــــــــــولاية ـــــــــــالمديةـــــــــــ</span></div>
+  <div class="line republic" style="--y:12.1mm"><span class="fit" data-tw="75.6">الجمهورية الجزائرية الديمقراطية الشعبية</span></div>
+
+  <div class="line ministry" style="--y:23.3mm"><span class="fit u" data-g="min" data-master data-tw="84.2">وزارة الداخلية والجماعات المحلية والتهيئة العمرانية</span></div>
+  <div class="line ministry" style="--y:29.9mm"><span class="fit u" data-g="min">المندوبية الوطنية للأمن في الطرق</span></div>
+  <div class="line ministry" style="--y:36.5mm"><span class="fit u" data-g="min">المندوبية الولائية للأمن في الطرق</span></div>
+  <div class="line ministry" style="--y:43.1mm"><span class="fit u" data-g="min" data-tw="53.8">لولاية {{WILAYA}}</span></div>
+
+  <div class="line title" style="--y:51mm"><span class="fit u" data-tw="108.4">بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</span></div>
+
+  <div class="line fr" style="--y:65.4mm">
+    <span class="fit" data-g="fl" data-k="الإس~م وال~لق~ب" data-tw="76.3"></span><span class="colon">:</span><span class="val" contenteditable data-f="name"></span>
+  </div>
+  <div class="line fr" style="--y:75.3mm">
+    <span class="fit" data-g="fl" data-k="تاري~خ ومك~ان المي~لاد" data-tw="76.3"></span><span class="colon">:</span><span class="val" contenteditable data-f="birth"></span>
+  </div>
+  <div class="line fr" style="--y:84.1mm">
+    <span class="fit" data-g="fl" data-k="العن~وان" data-tw="76.3"></span><span class="colon">:</span><span class="val" contenteditable data-f="address"></span>
+  </div>
+  <div class="line fr" style="--y:94.5mm">
+    <span class="fit" data-g="fl" data-k="تاريخ التسجيل لدى مدرسة تعليم السي~اقة" data-tw="76.3"></span><span class="colon">:</span><span class="val" contenteditable data-f="regdate"></span>
+  </div>
+  <div class="line fr" style="--y:104.6mm">
+    <span class="fit" data-g="fl" data-master data-tw="78.3">تاريخ إيداع الملف لدى مصالح المندوبية الولائية:</span><span class="colon stuck">:</span><span class="val" contenteditable data-f="subdate"></span>
   </div>
 
-  <div class="title">
-    <span>بطاقة تقييم المترشحين لسياقة السيارات ذات المحرك</span>
-  </div>
-
-  <div class="fields-section">
-    <div class="field-row">
-      <span class="field-label">الإســــم واللقــــب</span>
-      <span class="colon">:</span>
-      <span class="field-value" contenteditable data-f="name">بن عيسى محمد أمين</span>
-    </div>
-    <div class="field-row">
-      <span class="field-label">تاريــــخ ومكــــان الميــــلاد</span>
-      <span class="colon">:</span>
-      <span class="field-value" contenteditable data-f="birth">12/05/1998 - المدية</span>
-    </div>
-    <div class="field-row">
-      <span class="field-label">العنــــوان</span>
-      <span class="colon">:</span>
-      <span class="field-value" contenteditable data-f="address">حي 100 مسكن، المدية</span>
-    </div>
-    <div class="field-row">
-      <span class="field-label">تاريخ التسجيل لدى مدرسة تعليم السيــــاقة</span>
-      <span class="colon">:</span>
-      <span class="field-value" contenteditable data-f="regdate">03/09/2026</span>
-    </div>
-    <div class="field-row">
-      <span class="field-label">تاريخ إيداع الملف لدى مصالح المندوبية الولائية</span>
-      <span class="colon">:</span>
-      <span class="field-value" contenteditable data-f="subdate">20/10/2026</span>
-    </div>
-  </div>
-
-  <table class="eval-table">
+  <table class="abs eval-table">
+    <colgroup><col class="col-stage"><col class="col-eval"><col class="col-notes"></colgroup>
     <thead>
       <tr>
-        <th class="th-eval" colspan="2">بطــــــــاقـــــــة التقيــــــيــــم</th>
-        <th class="th-notes">ملاحظات الممتحن أثناء الإمتحان</th>
+        <th colspan="2"><span class="fit" data-g="th" data-k="بط~اق~ة التقي~ي~م" data-tw="46.2"></span></th>
+        <th><span class="fit" data-g="th" data-master data-tw="45.1">ملاحظات الممتحن أثناء الإمتحان</span></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="td-stage">
-          <div class="stage-name">قانون المرور</div>
-        </td>
-        <td class="td-dots td-dots-eval">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
-        <td class="td-dots td-dots-notes">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
+        <td class="td-stage"><span class="fit" data-g="st" data-master data-tw="18.3">قانون المرور</span></td>
+        <td><div class="dots ev"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
+        <td><div class="dots nt"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
       </tr>
       <tr>
-        <td class="td-stage">
-          <div class="stage-name">المنـــــــاورات</div>
-        </td>
-        <td class="td-dots td-dots-eval">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
-        <td class="td-dots td-dots-notes">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
+        <td class="td-stage"><span class="fit" data-g="st" data-k="المن~اورات" data-tw="23.2"></span></td>
+        <td><div class="dots ev"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
+        <td><div class="dots nt"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
       </tr>
       <tr>
-        <td class="td-stage">
-          <div class="stage-name">السياقة العـــــــامة</div>
-        </td>
-        <td class="td-dots td-dots-eval">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
-        <td class="td-dots td-dots-notes">
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-          <div class="dot-line"></div>
-        </td>
+        <td class="td-stage"><span class="fit" data-g="st" data-k="السياقة الع~امة" data-tw="25.6"></span></td>
+        <td><div class="dots ev"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
+        <td><div class="dots nt"><div class="dot-line l1"></div><div class="dot-line l2"></div><div class="dot-line l3"></div></div></td>
       </tr>
     </tbody>
   </table>
 
-  <div class="footer-section">
-    <div class="footer-trainer">إسم ولقب الممرن</div>
-    <div class="footer-school">ختم وإمضاء المدرسة</div>
-  </div>
+  <div class="line footer-trainer" style="--y:250.6mm"><span class="fit" data-tw="27.4">إسم ولقب الممرن</span></div>
+  <div class="line footer-school"  style="--y:250.6mm"><span class="fit" data-tw="34.1">ختم وإمضاء المدرسة</span></div>
 </div>
 
 <script>
+/*
+  The text is auto-fitted to the widths measured on the scan, so it matches even when
+  the machine's Arial has slightly different metrics:
+   - plain text  : font-size is adjusted until the width equals the scan's width
+   - kashida text: tatweel letters (ـ) are added until the width equals the scan's width
+*/
 (function(){
+  var MM = 96 / 25.4;
+  var T = 'ـ';
+
+  function fitSize(el){
+    var tw = parseFloat(el.dataset.tw) * MM;
+    var base = parseFloat(getComputedStyle(el).fontSize);
+    el.style.fontSize = base + 'px';
+    var w = el.offsetWidth;
+    if (w > 0) el.style.fontSize = (base * tw / w) + 'px';
+  }
+
+  function build(parts, t){
+    var m = parts.length - 1, s = parts[0];
+    for (var i = 1; i <= m; i++){
+      var n = Math.floor(t / m) + ((i - 1) < (t % m) ? 1 : 0);
+      s += new Array(n + 1).join(T) + parts[i];
+    }
+    return s;
+  }
+
+  function fillKashida(el){
+    var tw = parseFloat(el.dataset.tw) * MM;
+    var parts = el.dataset.k.split('~');
+    var prev = 0, t;
+    for (t = 0; t <= 400; t++){
+      el.textContent = build(parts, t);
+      var w = el.offsetWidth;
+      if (w >= tw){
+        if (t > 0 && (w - tw) > (tw - prev)){ t--; el.textContent = build(parts, t); }
+        return;
+      }
+      prev = w;
+    }
+  }
+
+  function layout(){
+    var page = document.getElementById('page');
+    // 1. plain-text elements: fit font size (masters first so their size can be shared)
+    var all = page.querySelectorAll('.fit');
+    var groups = {};
+    Array.prototype.forEach.call(all, function(el){
+      var g = el.dataset.g;
+      if (g){ (groups[g] = groups[g] || []).push(el); }
+    });
+    Array.prototype.forEach.call(all, function(el){
+      if (!el.dataset.g && !el.dataset.k && el.dataset.tw) fitSize(el);
+    });
+    Object.keys(groups).forEach(function(g){
+      var master = groups[g].filter(function(e){ return e.hasAttribute('data-master'); })[0];
+      if (master){
+        fitSize(master);
+        var fs = master.style.fontSize;
+        groups[g].forEach(function(e){ e.style.fontSize = fs; });
+      }
+    });
+    // 2. kashida elements
+    Array.prototype.forEach.call(page.querySelectorAll('.fit[data-k]'), fillKashida);
+  }
+
   function fit(){
     var w = document.documentElement.clientWidth - 20;
     var pw = 210 * 3.7795275591;
-    if (w < pw) {
-      document.documentElement.style.setProperty("--fit", (w / pw).toFixed(3));
-    } else {
-      document.documentElement.style.setProperty("--fit", "1");
-    }
+    document.documentElement.style.setProperty('--fit', w < pw ? (w / pw).toFixed(3) : '1');
   }
+
   fit();
-  window.addEventListener("resize", fit);
-  window.addEventListener("beforeprint", function(){ document.documentElement.style.setProperty("--fit", "1"); });
-  window.addEventListener("afterprint", fit);
+  window.addEventListener('resize', fit);
+  window.addEventListener('beforeprint', function(){ document.documentElement.style.setProperty('--fit', '1'); });
+  window.addEventListener('afterprint', fit);
+
+  function go(){ layout(); }
+  if (document.fonts && document.fonts.ready){ document.fonts.ready.then(go); } else { window.addEventListener('load', go); }
+  window.addEventListener('load', go);
 })();
 </script>
 

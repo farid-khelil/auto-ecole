@@ -9,6 +9,7 @@ import {
   getCurrentCandidates,
 } from "./candidates-lists";
 import { clientService, type Client } from "./clients";
+import { appAssetUrl } from "./app-assets";
 
 /**
  * Generates the official النموذج رقم 02 as a PDF using the authentic
@@ -31,7 +32,7 @@ export async function generateCandidatesListPdf(
       ? allClients
       : await clientService.list().catch(() => []);
   // 1. Load the authentic Model 02 template PDF
-  const templateUrl = "/model-02-template.pdf?v=2";
+  const templateUrl = appAssetUrl("model-02-template.pdf");
   const existingPdfBytes = await fetch(templateUrl).then((res) => {
     if (!res.ok) throw new Error("فشل تحميل قالب النموذج رقم 02");
     return res.arrayBuffer();
@@ -41,7 +42,7 @@ export async function generateCandidatesListPdf(
   pdfDoc.registerFontkit(fontkit);
 
   // 2. Load Arabic & Latin Fonts
-  const arabicFontBytes = await fetch("/fonts/NotoSansArabic-Regular.ttf").then((res) => {
+  const arabicFontBytes = await fetch(appAssetUrl("fonts/NotoSansArabic-Regular.ttf")).then((res) => {
     if (!res.ok) throw new Error("فشل تحميل الخط العربي");
     return res.arrayBuffer();
   });
@@ -495,40 +496,4 @@ export async function downloadCandidatesListPdf(
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
-
-/**
- * Generates the filled Model 02 PDF and immediately opens it in the browser
- * or launches the native print dialog.
- */
-export async function printCandidatesListPdf(
-  record: CandidatesListRecord,
-  allLists: CandidatesListRecord[] = [],
-  allClients: Client[] = []
-): Promise<void> {
-  const pdfBytes = await generateCandidatesListPdf(record, allLists, allClients);
-  const blob = new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-
-  // Hidden iframe to launch native print dialog directly
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
-  iframe.src = url;
-  document.body.appendChild(iframe);
-
-  iframe.onload = () => {
-    setTimeout(() => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } catch {
-        window.open(url, "_blank");
-      }
-    }, 400);
-  };
 }
