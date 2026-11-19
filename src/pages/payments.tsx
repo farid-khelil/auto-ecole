@@ -7,6 +7,7 @@ import UpdateButton from '../components/UpdateButton';
 import { vehicleService, calculateDocumentStatus, VEHICLES_UPDATED_EVENT } from '../services/vehicles';
 import { matchesArabicSearch } from '../services/arabic-search';
 import '../styles/payments.css';
+import logoImg from '../assets/logo.png';
 
 const MONTH_NAMES_AR = [
   'جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان',
@@ -580,7 +581,7 @@ export default function PaymentsPage() {
           <header className="dashboard-header">
             <div className="dashboard-title-box">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+                <img src={logoImg} alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
                 <h1>المدفوعات والمداخيل</h1>
               </div>
               <div className="dashboard-date-sub">{getArabicDate()}</div>

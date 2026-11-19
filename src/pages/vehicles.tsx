@@ -14,6 +14,7 @@ import {
 } from '../services/vehicles';
 import { matchesArabicSearch } from '../services/arabic-search';
 import '../styles/vehicles.css';
+import logoImg from '../assets/logo.png';
 
 interface RenewTarget {
   vehicle: Vehicle;
@@ -328,7 +329,7 @@ export default function VehiclesPage() {
           <div>
             <div className="vehicles-eyebrow">أسطول المدرسة والسلامة</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+              <img src={logoImg} alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
               <h1>إدارة المركبات والسيارات</h1>
             </div>
             <p>متابعة وتجديد الوثائق الإجبارية (التأمين، البطاقة الرمادية، مطفأة الحريق، صندوق الإسعاف) والتنبيهات الموقوتة</p>

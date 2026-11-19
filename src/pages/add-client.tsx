@@ -5,6 +5,7 @@ import Icon from '../components/Icon.tsx';
 import { clientService, TRAINING_STAGES } from '../services/clients';
 import { printMedicalCertificate } from '../services/medical-cert';
 import '../styles/add-client.css';
+import logoImg from '../assets/logo.png';
 
 const clientDocuments = [
 	{ id: 'birth-certificate', title: 'شهادة ميلاد' },
@@ -154,14 +155,14 @@ export default function AddClient() {
 				<div className="add-topbar">
 					<div className="breadcrumb">الإدارة / العملاء / <b>عميل جديد</b></div>
 					<span className="school-name">
-						<img src="/logo.png" alt="شعار المدرسة" className="school-logo-img" />
+						<img src={logoImg} alt="شعار المدرسة" className="school-logo-img" />
 						مدرسة الأمل للسياقة
 					</span>
 				</div>
 				<div className="page-intro">
 					<div className="eyebrow">إدارة التسجيلات</div>
 					<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-						<img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+						<img src={logoImg} alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
 						<h1>إضافة عميل جديد</h1>
 					</div>
 					<p>أدخل معلومات المتدرب، المدفوعات ومرحلة التكوين لإنشاء ملفه ومتابعة تكوينه.</p>

@@ -10,6 +10,7 @@ import {
 } from '../services/schedule';
 import { candidatesListService } from '../services/candidates-lists';
 import '../styles/calendar.css';
+import logoImg from '../assets/logo.png';
 
 interface DayEvent {
   id: string;
@@ -271,7 +272,7 @@ export default function CalendarPage() {
         <div className="cal-header">
           <div className="cal-header-info">
             <div className="cal-title-row">
-              <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '40px', height: '40px' }} />
+              <img src={logoImg} alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '40px', height: '40px' }} />
               <div>
                 <h1 className="cal-title">إدارة المواعيد والتقويم</h1>
                 <p className="cal-subtitle">برمجة ومتابعة حصص قانون المرور، السياقة، والامتحانات الرسمية</p>

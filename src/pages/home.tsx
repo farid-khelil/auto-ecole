@@ -7,6 +7,7 @@ import { clientService, type Client } from '../services/clients';
 import { matchesArabicSearch } from '../services/arabic-search';
 import { getLatestExam } from '../services/attendance';
 import '../styles/home.css';
+import logoImg from '../assets/logo.png';
 
 type DashboardClient = Client & {
 	pack: string;
@@ -297,7 +298,7 @@ export default function Home() {
 					<div>
 						<div className="eyebrow">إدارة التسجيلات والأرشيف</div>
 						<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-							<img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+							<img src={logoImg} alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
 							<h1>{statusTab === 'archive' ? 'الأرشيف السنوي' : 'عملاؤك'}</h1>
 						</div>
 						<p>

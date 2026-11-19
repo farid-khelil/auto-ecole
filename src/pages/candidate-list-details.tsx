@@ -24,6 +24,7 @@ import {
 } from '../services/transmittal-letter';
 import { matchesArabicSearch } from '../services/arabic-search';
 import '../styles/candidates-list.css';
+import logoImg from '../assets/logo.png';
 
 type PreviewDocument = 'model02' | 'transmittal';
 
@@ -403,7 +404,7 @@ export default function CandidateListDetailsPage() {
         <div className="list-details-header">
           <div className="list-details-title-box">
             <div className="list-badge-icon" style={{ background: 'transparent', padding: '2px' }}>
-              <img src="/logo.png" alt="شعار مدرسة السياقة" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <img src={logoImg} alt="شعار مدرسة السياقة" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
               <h1 className="list-details-title">

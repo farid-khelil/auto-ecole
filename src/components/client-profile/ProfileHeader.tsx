@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { Client } from '../../services/clients';
 import Icon from '../Icon.tsx';
+import logoImg from '../../assets/logo.png';
 
 const PROFILE_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABb0lEQVR4nO2VS0oDQRCGPxV0YXTl4w7mEMasRRMfeATRhboRCa40Kx/nEHdKPIb43krIAXxGERdGpeAP9GZmMpMeUJgPajV/1V/dU90NGRn/kDGgClwB74pLYBcYTdt8AWgCPwHxCsylaf4toxNgEhhUFIBTfWsB5TS2vSmDzRDdljQvwIjPBqrOyqOoSbvjs4FrFbVtj2JKWhtMb7ypaK4D7ZC09su88RyjgWFpn3w2cKGiNu1RFKU999nAtoraUYviTNqKzwbGgUcVtqMWREWaBx1dr5SBLxnUNO05RdFZuWlKpMS8brqgq7glTSrMAPch5u0wzbRP4x7gwDG4AdaACectyAPrwK009mbsKbdrDlX0E1gGekO09m1FWsvZ79a85Jh3cg23KThNzCY1HwAaKmIrj8uqcutAf5IGlpx/HrbtQfQBd6qxmKSBYyXbwCVlQzWOkiTXlWzTnpS8czRj8xHjBYx6mq1WRsbf5BdeuXgU/C/QAwAAAABJRU5ErkJggg==';
 
@@ -97,7 +98,7 @@ export default function ProfileHeader({
       <div className="profile-topbar">
         <div className="breadcrumb">الإدارة / العملاء / <b>ملف العميل</b></div>
         <span className="school-name">
-          <img src="/logo.png" alt="شعار المدرسة" className="school-logo-img" />
+          <img src={logoImg} alt="شعار المدرسة" className="school-logo-img" />
           مدرسة الأمل للسياقة
         </span>
       </div>

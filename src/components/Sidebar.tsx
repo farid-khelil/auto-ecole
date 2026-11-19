@@ -5,6 +5,7 @@ import { vehicleService, VEHICLES_UPDATED_EVENT, calculateDocumentStatus } from 
 import UpdateButton from './UpdateButton';
 import '../styles/sidebar.css';
 import '../styles/updater.css';
+import logoImg from '../assets/logo.png';
 
 interface SidebarProps {
 	onOpenCandidatesList?: () => void;
@@ -85,7 +86,7 @@ export default function Sidebar({ onOpenCandidatesList }: SidebarProps) {
 				{/* Brand Header */}
 				<div className="sidebar-brand">
 					<div className="sidebar-brand-icon">
-						<img src="/logo.png" alt="شعار مدرسة السياقة" className="sidebar-brand-logo-img" />
+						<img src={logoImg} alt="شعار مدرسة السياقة" className="sidebar-brand-logo-img" />
 					</div>
 					<div className="sidebar-brand-text">
 						<div className="sidebar-brand-title">مدرسة السياقة</div>
