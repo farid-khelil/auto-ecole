@@ -402,7 +402,9 @@ export default function CandidateListDetailsPage() {
         {/* Page Header Banner */}
         <div className="list-details-header">
           <div className="list-details-title-box">
-            <div className="list-badge-icon"><Icon name="list" size={30} /></div>
+            <div className="list-badge-icon" style={{ background: 'transparent', padding: '2px' }}>
+              <img src="/logo.png" alt="شعار مدرسة السياقة" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
             <div>
               <h1 className="list-details-title">
                 قائمة مترشحي الامتحان — {formatDate(list.examDate)}

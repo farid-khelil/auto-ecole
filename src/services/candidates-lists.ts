@@ -56,72 +56,9 @@ export function isClassAB(training?: string): boolean {
 }
 
 const STORAGE_KEY = 'auto-ecole.candidates-lists';
-const DEMO_LIST_SEEDED_KEY = 'auto-ecole.demo-list-seeded-v2';
-
-function seedDemoList() {
-  if (typeof window === 'undefined' || !window.localStorage) return;
-  if (!localStorage.getItem(DEMO_LIST_SEEDED_KEY)) {
-    const existing = localStorage.getItem(STORAGE_KEY);
-    if (!existing || existing === '[]') {
-      const today = new Date();
-      const inDays = (n: number) => {
-        const d = new Date(today);
-        d.setDate(d.getDate() + n);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      };
-
-      const demoList: CandidatesListRecord = {
-        id: 'list-demo-1',
-        depositDate: inDays(-2),
-        examDate: inDays(5),
-        transmittalNumber: '2026/04',
-        transmittalDate: inDays(-2),
-        createdAt: new Date().toISOString(),
-        notes: 'قائمة المترشحين الرسمية لاجتياز امتحانات دورة هذا الشهر',
-        candidates: [
-          {
-            id: '001',
-            name: 'أحمد بن محمد',
-            phone: '0550 12 34 56',
-            birthDate: '2000-05-15',
-            email: 'ahmed@example.com',
-            address: 'الجزائر العاصمة',
-            training: 'B',
-            registrationNumber: '001',
-            registrationDate: '2026-10-18',
-            receivedDocuments: [],
-            documents: [],
-            stage: 'مناورات',
-          },
-          {
-            id: '002',
-            name: 'سارة بن علي',
-            phone: '0662 18 42 05',
-            birthDate: '2004-11-22',
-            email: 'sara@example.com',
-            address: 'بومرداس',
-            training: 'B',
-            registrationNumber: '002',
-            registrationDate: '2026-10-14',
-            receivedDocuments: [],
-            documents: [],
-            stage: 'قانون المرور',
-          },
-        ],
-        results: {},
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([demoList]));
-    }
-    localStorage.setItem(DEMO_LIST_SEEDED_KEY, 'true');
-  }
-}
-
-seedDemoList();
 
 export const candidatesListService = {
   async getAll(): Promise<CandidatesListRecord[]> {
-    seedDemoList();
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) return [];

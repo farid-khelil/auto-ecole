@@ -153,11 +153,17 @@ export default function AddClient() {
 			<section className="add-client-content">
 				<div className="add-topbar">
 					<div className="breadcrumb">الإدارة / العملاء / <b>عميل جديد</b></div>
-					<span className="school-name">مدرسة الأمل للسياقة</span>
+					<span className="school-name">
+						<img src="/logo.png" alt="شعار المدرسة" className="school-logo-img" />
+						مدرسة الأمل للسياقة
+					</span>
 				</div>
 				<div className="page-intro">
 					<div className="eyebrow">إدارة التسجيلات</div>
-					<h1>إضافة عميل جديد</h1>
+					<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+						<img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+						<h1>إضافة عميل جديد</h1>
+					</div>
 					<p>أدخل معلومات المتدرب، المدفوعات ومرحلة التكوين لإنشاء ملفه ومتابعة تكوينه.</p>
 				</div>
 				{saved && <div className="saved">تم حفظ ملف العميل بنجاح. جارٍ الانتقال إلى ملف العميل…</div>}

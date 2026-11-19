@@ -579,7 +579,10 @@ export default function PaymentsPage() {
           {/* Header */}
           <header className="dashboard-header">
             <div className="dashboard-title-box">
-              <h1>المدفوعات والمداخيل</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+                <h1>المدفوعات والمداخيل</h1>
+              </div>
               <div className="dashboard-date-sub">{getArabicDate()}</div>
             </div>
 

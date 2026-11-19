@@ -296,7 +296,10 @@ export default function Home() {
 				<div className="page-head">
 					<div>
 						<div className="eyebrow">إدارة التسجيلات والأرشيف</div>
-						<h1>{statusTab === 'archive' ? 'الأرشيف السنوي' : 'عملاؤك'}</h1>
+						<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+							<img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+							<h1>{statusTab === 'archive' ? 'الأرشيف السنوي' : 'عملاؤك'}</h1>
+						</div>
 						<p>
 							{statusTab === 'archive'
 								? `تصفح السجلات والأرشيف لسنة ${selectedArchiveYear}. يمكنك البحث واسترجاع أي ملف عند الحاجة.`

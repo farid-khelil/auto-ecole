@@ -271,9 +271,7 @@ export default function CalendarPage() {
         <div className="cal-header">
           <div className="cal-header-info">
             <div className="cal-title-row">
-              <div className="cal-title-icon">
-                <Icon name="calendar" size={20} />
-              </div>
+              <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '40px', height: '40px' }} />
               <div>
                 <h1 className="cal-title">إدارة المواعيد والتقويم</h1>
                 <p className="cal-subtitle">برمجة ومتابعة حصص قانون المرور، السياقة، والامتحانات الرسمية</p>

@@ -102,7 +102,7 @@ export type Client = CreateClientInput & {
 type CreatedClient = { id: string | number };
 
 const CLIENTS_STORAGE_KEY = 'auto-ecole.clients';
-const DEMO_CLIENTS_SEEDED_KEY = 'auto-ecole.demo-clients-seeded-v12';
+// (DEMO_CLIENTS_SEEDED_KEY removed — demo seeding is no longer used)
 const ARCHIVE_STORAGE_PREFIX = 'auto-ecole.archive.';
 const ARCHIVE_YEARS_KEY = 'auto-ecole.archive-years';
 
@@ -114,247 +114,18 @@ const standardDocuments: ClientDocument[] = [
   { id: 'identity-photos', title: '6 صور شمسية' },
 ];
 
-const demoClients: Client[] = [
-  {
-    id: '001',
-    registrationNumber: '001',
-    name: 'أمين خليفي',
-    phone: '0551 24 68 91',
-    birthDate: '2003-05-12',
-    birthPlace: 'الجزائر العاصمة',
-    email: 'amine.khelifi@example.com',
-    address: 'الجزائر العاصمة',
-    training: 'B',
-    registrationDate: '2026-10-18',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate', 'identity-copy'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'مناورات',
-    color: '#ece5f8',
-    history: [
-      { id: 'demo-h1', timestamp: '2026-10-18T09:00:00.000Z', action: 'creation', summary: 'تم تسجيل المتدرب — تكوين صنف B' },
-      { id: 'demo-h2', timestamp: '2026-10-18T09:05:00.000Z', action: 'document_update', summary: 'تحديث وثائق الملف — استلام: شهادة ميلاد، شهادة الإقامة' },
-      { id: 'demo-h3', timestamp: '2026-10-18T10:00:00.000Z', action: 'payment', summary: 'دفعة أولى بمبلغ 15٬000 د.ج — المتبقي: 20٬000 د.ج', amount: 15000 },
-      { id: 'demo-h4', timestamp: '2026-10-19T14:30:00.000Z', action: 'document_update', summary: 'تحديث وثائق الملف — استلام: شهادة طبية، نسخة من بطاقة التعريف الوطنية أو رخصة السياقة' },
-      { id: 'demo-h5', timestamp: '2026-10-20T11:00:00.000Z', action: 'payment', summary: 'تم تسديد دفعة بمبلغ 20٬000 د.ج — المتبقي: 0 د.ج', amount: 20000 },
-      { id: 'demo-h6', timestamp: '2026-10-21T08:30:00.000Z', action: 'stage_change', summary: 'تغيير المرحلة من "قانون المرور" إلى "مناورات"', diffs: [{ field: 'stage', label: 'مرحلة التكوين', oldValue: 'قانون المرور', newValue: 'مناورات' }] },
-      { id: 'demo-h7', timestamp: '2026-10-22T09:15:00.000Z', action: 'note', summary: 'المترشح ملتزم بالحصص — أداء جيد في المناورات', note: 'المترشح ملتزم بالحصص — أداء جيد في المناورات' },
-    ],
-  },
-  {
-    id: '002',
-    registrationNumber: '002',
-    name: 'سارة بن علي',
-    phone: '0662 18 42 05',
-    birthDate: '2004-11-22',
-    birthPlace: 'بومرداس',
-    email: 'sara.benali@example.com',
-    address: 'بومرداس',
-    training: 'B',
-    registrationDate: '2026-10-14',
-    receivedDocuments: ['birth-certificate', 'residence-certificate'],
-    documents: standardDocuments,
-    paidAmount: 15000,
-    totalAmount: 35000,
-    stage: 'قانون المرور',
-    color: '#ffe9d5',
-    history: [
-      { id: 'demo-s1', timestamp: '2026-10-14T08:30:00.000Z', action: 'creation', summary: 'تم تسجيل المتدرب — تكوين صنف B' },
-      { id: 'demo-s2', timestamp: '2026-10-14T08:45:00.000Z', action: 'payment', summary: 'دفعة أولى بمبلغ 15٬000 د.ج — المتبقي: 20٬000 د.ج', amount: 15000 },
-      { id: 'demo-s3', timestamp: '2026-10-14T09:00:00.000Z', action: 'document_update', summary: 'تحديث وثائق الملف — استلام: شهادة ميلاد، شهادة الإقامة' },
-      { id: 'demo-s4', timestamp: '2026-10-17T10:00:00.000Z', action: 'note', summary: 'تم التواصل هاتفياً — تذكير بموعد حصة قانون المرور', note: 'تم التواصل هاتفياً — تذكير بموعد حصة قانون المرور' },
-    ],
-  },
-  {
-    id: '003',
-    registrationNumber: '003',
-    name: 'ياسين مرابط',
-    phone: '0770 56 31 27',
-    birthDate: '2001-02-08',
-    birthPlace: 'البليدة',
-    email: 'yassine.merabet@example.com',
-    address: 'البليدة',
-    training: 'B',
-    registrationDate: '2026-10-08',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'مناورات',
-    color: '#d6f6d6',
-    history: [
-      { id: 'demo-y1', timestamp: '2026-10-08T10:00:00.000Z', action: 'creation', summary: 'تم تسجيل المتدرب — تكوين صنف B' },
-      { id: 'demo-y2', timestamp: '2026-10-08T10:15:00.000Z', action: 'payment', summary: 'دفعة أولى بمبلغ 20٬000 د.ج — المتبقي: 15٬000 د.ج', amount: 20000 },
-      { id: 'demo-y3', timestamp: '2026-10-10T14:00:00.000Z', action: 'info_update', summary: 'تم تعديل بيانات المتدرب — رقم الهاتف: من «0770 00 00 00» إلى «0770 56 31 27»', diffs: [{ field: 'phone', label: 'رقم الهاتف', oldValue: '0770 00 00 00', newValue: '0770 56 31 27' }] },
-      { id: 'demo-y4', timestamp: '2026-10-12T09:00:00.000Z', action: 'document_update', summary: 'تحديث وثائق الملف — استلام: شهادة ميلاد، شهادة الإقامة، شهادة طبية' },
-      { id: 'demo-y5', timestamp: '2026-10-15T16:00:00.000Z', action: 'payment', summary: 'تم تسديد دفعة بمبلغ 15٬000 د.ج — المتبقي: 0 د.ج', amount: 15000 },
-      { id: 'demo-y6', timestamp: '2026-10-18T08:00:00.000Z', action: 'stage_change', summary: 'تغيير المرحلة من "قانون المرور" إلى "مناورات"', diffs: [{ field: 'stage', label: 'مرحلة التكوين', oldValue: 'قانون المرور', newValue: 'مناورات' }] },
-    ],
-  },
-  {
-    id: '004',
-    registrationNumber: '004',
-    name: 'هيبة منصوري',
-    phone: '0558 72 16 83',
-    birthDate: '2005-07-19',
-    birthPlace: 'تيبازة',
-    email: 'hiba.mansouri@example.com',
-    address: 'تيبازة',
-    training: 'A',
-    registrationDate: '2026-10-02',
-    receivedDocuments: ['birth-certificate', 'medical-certificate'],
-    documents: standardDocuments,
-    paidAmount: 10000,
-    totalAmount: 25000,
-    stage: 'قانون المرور',
-    color: '#fce4e4',
-  },
-  {
-    id: '005',
-    registrationNumber: '005',
-    name: 'رياض جوادي',
-    phone: '0793 45 09 62',
-    birthDate: '1999-03-30',
-    birthPlace: 'الجزائر العاصمة',
-    email: 'riadh.djouadi@example.com',
-    address: 'الجزائر العاصمة',
-    training: 'B',
-    registrationDate: '2026-09-22',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate', 'identity-copy', 'identity-photos'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'سياقة عامة',
-    color: '#e0efff',
-  },
-  {
-    id: '006',
-    registrationNumber: '006',
-    name: 'لينا ناصر',
-    phone: '0561 38 74 20',
-    birthDate: '2005-09-02',
-    birthPlace: 'المدية',
-    email: 'lina.nasser@example.com',
-    address: 'المدية',
-    training: 'B',
-    registrationDate: '2026-09-12',
-    receivedDocuments: ['birth-certificate', 'identity-photos'],
-    documents: standardDocuments,
-    paidAmount: 20000,
-    totalAmount: 35000,
-    stage: 'قانون المرور',
-    color: '#f1ecfa',
-  },
-  {
-    id: '007',
-    registrationNumber: '007',
-    name: 'كريم بلقاسم',
-    phone: '0555 12 34 56',
-    birthDate: '1992-04-15',
-    birthPlace: 'الجزائر العاصمة',
-    email: 'karim.belkacem@example.com',
-    address: 'الرويبة',
-    training: 'C',
-    registrationDate: '2026-08-25',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate', 'identity-copy'],
-    documents: standardDocuments,
-    paidAmount: 40000,
-    totalAmount: 40000,
-    stage: 'سياقة عامة',
-    color: '#fff0d5',
-  },
-  {
-    id: '008',
-    registrationNumber: '008',
-    name: 'مراد حميدي',
-    phone: '0661 98 76 54',
-    birthDate: '1988-11-03',
-    birthPlace: 'البليدة',
-    email: 'mourad.hamidi@example.com',
-    address: 'بوفاريك',
-    training: 'D',
-    registrationDate: '2026-08-10',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate', 'identity-copy'],
-    documents: standardDocuments,
-    paidAmount: 45000,
-    totalAmount: 45000,
-    stage: 'مناورات',
-    color: '#d6f6f6',
-  },
-  {
-    id: '009',
-    registrationNumber: '009',
-    name: 'فاطمة الزهراء قاسمي',
-    phone: '0552 89 12 34',
-    birthDate: '2002-08-14',
-    birthPlace: 'وهران',
-    email: 'fatima.kacemi@example.com',
-    address: 'بئر مراد رايس',
-    training: 'B',
-    registrationDate: '2026-07-20',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'سياقة عامة',
-    color: '#d6f6d6',
-  },
-  {
-    id: '010',
-    registrationNumber: '010',
-    name: 'عبد الرحمن طاهري',
-    phone: '0772 34 56 78',
-    birthDate: '1996-01-28',
-    birthPlace: 'تيزي وزو',
-    email: 'abderrahmane.tahri@example.com',
-    address: 'درارية',
-    training: 'C',
-    registrationDate: '2026-07-05',
-    receivedDocuments: ['birth-certificate', 'identity-copy'],
-    documents: standardDocuments,
-    paidAmount: 25000,
-    totalAmount: 40000,
-    stage: 'قانون المرور',
-    color: '#ffe9d5',
-  },
-  {
-    id: '011',
-    registrationNumber: '011',
-    name: 'مريم بوزيد',
-    phone: '0664 77 88 99',
-    birthDate: '2004-06-17',
-    birthPlace: 'سطيف',
-    email: 'meriem.bouzid@example.com',
-    address: 'القبة',
-    training: 'B',
-    registrationDate: '2026-06-18',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'medical-certificate', 'identity-photos'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'سياقة عامة',
-    color: '#ece5f8',
-  },
-  {
-    id: '012',
-    registrationNumber: '012',
-    name: 'وليد لعريبي',
-    phone: '0550 11 22 33',
-    birthDate: '1998-10-09',
-    birthPlace: 'عنابة',
-    email: 'walid.laribi@example.com',
-    address: 'الشراقة',
-    training: 'B',
-    registrationDate: '2026-05-24',
-    receivedDocuments: ['birth-certificate', 'residence-certificate', 'identity-copy'],
-    documents: standardDocuments,
-    paidAmount: 35000,
-    totalAmount: 35000,
-    stage: 'منتهي',
-    color: '#e2e8f0',
-  },
-];
+const DEMO_PURGED_KEY = 'auto-ecole.demo-clients-purged-v3';
+
+const DEMO_IDS = new Set([
+  '001', '002', '003', '004', '005', '006',
+  '007', '008', '009', '010', '011', '012',
+]);
+
+const DEMO_NAMES = new Set([
+  'أمين خليفي', 'سارة بن علي', 'ياسين مرابط', 'هيبة منصوري',
+  'رياض جوادي', 'لينا ناصر', 'كريم بلقاسم', 'مراد حميدي',
+  'فاطمة الزهراء قاسمي', 'عبد الرحمن طاهري', 'مريم بوزيد', 'وليد لعريبي',
+].map((n) => n.trim().toLowerCase()));
 
 function getArchiveKey(year: number): string {
   return `${ARCHIVE_STORAGE_PREFIX}${year}`;
@@ -459,48 +230,16 @@ function storeClients(clients: Client[]) {
 }
 
 function ensureDemoClients(): Client[] {
-  const isCurrentVersion = window.localStorage.getItem(DEMO_CLIENTS_SEEDED_KEY);
-  if (!isCurrentVersion) {
+  // Purge any old demo data on first run after update
+  if (!window.localStorage.getItem(DEMO_PURGED_KEY)) {
     const stored = getStoredClients();
-    // Keep any user-created custom clients (those with UUID or not matching demo IDs)
-    const demoIds = new Set(demoClients.map((d) => String(d.id)));
-    const demoNames = new Set(demoClients.map((d) => d.name.trim().toLowerCase()));
-    const customUserClients = stored.filter(
-      (c) => !demoIds.has(String(c.id)) && !demoNames.has((c.name || '').trim().toLowerCase())
+    const purged = stored.filter(
+      (c) => !DEMO_IDS.has(String(c.id)) && !DEMO_NAMES.has((c.name || '').trim().toLowerCase()),
     );
-
-    const merged = [...demoClients, ...customUserClients];
-    storeClients(merged);
-    window.localStorage.setItem(DEMO_CLIENTS_SEEDED_KEY, 'true');
-    return getStoredClients();
+    storeClients(purged);
+    window.localStorage.setItem(DEMO_PURGED_KEY, 'true');
   }
-
-  const stored = getStoredClients();
-  // Ensure duplicates in existing storage are filtered out
-  const seenIds = new Set<string>();
-  const seenNames = new Set<string>();
-  const cleaned: Client[] = [];
-  let hadDuplicates = false;
-
-  for (const c of stored) {
-    const idKey = String(c.id).trim();
-    const nameKey = (c.name || '').trim().toLowerCase();
-    if (seenIds.has(idKey) || (nameKey && seenNames.has(nameKey))) {
-      hadDuplicates = true;
-      continue;
-    }
-    seenIds.add(idKey);
-    if (nameKey) seenNames.add(nameKey);
-    cleaned.push(c);
-  }
-
-  if (hadDuplicates || cleaned.length === 0) {
-    const listToSave = cleaned.length > 0 ? cleaned : demoClients;
-    storeClients(listToSave);
-    return listToSave;
-  }
-
-  return cleaned;
+  return getStoredClients();
 }
 
 // ─── History Helpers ─────────────────────────────────────────────────────────
@@ -1127,5 +866,19 @@ export const clientService = {
     }
 
     return Promise.reject(new Error('تعذر العثور على ملف العميل.'));
+  },
+
+  /** Permanently delete a client by ID. */
+  delete(id: string): Promise<void> {
+    const idStr = String(id).trim();
+    const clients = ensureDemoClients();
+    const filtered = clients.filter(
+      (c) => String(c.id).trim() !== idStr && !(c.registrationNumber && String(c.registrationNumber).trim() === idStr),
+    );
+    if (filtered.length === clients.length) {
+      return Promise.reject(new Error('تعذر العثور على العميل.'));
+    }
+    storeClients(filtered);
+    return Promise.resolve();
   },
 };

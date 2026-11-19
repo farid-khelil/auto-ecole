@@ -310,7 +310,14 @@ return (
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+            <div>
+              <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 800 }}>قوائم الامتحانات</h1>
+              <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)', fontSize: '13.5px' }}>تنظيم ومتابعة ملفات قوائم الامتحانات الرسمية</p>
+            </div>
+          </div>
           <button
             type="button"
             className="add-button"

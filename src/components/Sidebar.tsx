@@ -85,14 +85,7 @@ export default function Sidebar({ onOpenCandidatesList }: SidebarProps) {
 				{/* Brand Header */}
 				<div className="sidebar-brand">
 					<div className="sidebar-brand-icon">
-						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-							<circle cx="12" cy="12" r="10" />
-							<circle cx="12" cy="12" r="2" />
-							<line x1="12" y1="2" x2="12" y2="10" />
-							<line x1="12" y1="14" x2="12" y2="22" />
-							<line x1="4.93" y1="4.93" x2="10.59" y2="10.59" />
-							<line x1="13.41" y1="13.41" x2="19.07" y2="19.07" />
-						</svg>
+						<img src="/logo.png" alt="شعار مدرسة السياقة" className="sidebar-brand-logo-img" />
 					</div>
 					<div className="sidebar-brand-text">
 						<div className="sidebar-brand-title">مدرسة السياقة</div>

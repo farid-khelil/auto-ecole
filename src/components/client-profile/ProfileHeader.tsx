@@ -30,6 +30,7 @@ export type ProfileHeaderProps = {
   onTabChange: (tab: MainTab) => void;
   onPhotoUpload: (photoDataUrl: string) => void;
   onPhotoRemove: () => void;
+  onDeleteClient?: () => void;
 };
 
 export default function ProfileHeader({
@@ -55,6 +56,7 @@ export default function ProfileHeader({
   onTabChange,
   onPhotoUpload,
   onPhotoRemove,
+  onDeleteClient,
 }: ProfileHeaderProps) {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const currentPhoto = client.photo || client.attendance?.photo || '';
@@ -94,7 +96,10 @@ export default function ProfileHeader({
     <>
       <div className="profile-topbar">
         <div className="breadcrumb">الإدارة / العملاء / <b>ملف العميل</b></div>
-        <span className="school-name">مدرسة الأمل للسياقة</span>
+        <span className="school-name">
+          <img src="/logo.png" alt="شعار المدرسة" className="school-logo-img" />
+          مدرسة الأمل للسياقة
+        </span>
       </div>
 
       <div className="profile-heading">
@@ -139,7 +144,7 @@ export default function ProfileHeader({
               onClick={() => photoInputRef.current?.click()}
               title={currentPhoto ? 'تغيير صورة المتدرب' : 'تحميل صورة المتدرب'}
             >
-              <Icon name="camera" size={13} />
+              <Icon name="camera" size={16} />
             </button>
 
             {currentPhoto && (
@@ -152,7 +157,7 @@ export default function ProfileHeader({
                 }}
                 title="حذف صورة المتدرب"
               >
-                <Icon name="close" size={11} />
+                <Icon name="close" size={14} />
               </button>
             )}
           </div>
@@ -248,6 +253,22 @@ export default function ProfileHeader({
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Icon name="document" size={17} /> بطاقة تقييم
+          </button>
+          <button
+            className="button"
+            type="button"
+            title="حذف ملف المترشح نهائياً"
+            onClick={onDeleteClient}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: 'rgba(239, 68, 68, 0.12)',
+              color: '#ef4444',
+              borderColor: 'rgba(239, 68, 68, 0.3)',
+            }}
+          >
+            <Icon name="trash" size={17} /> حذف المترشح
           </button>
           <Link className="back-button" to="/clients">العودة إلى المترشحين</Link>
         </div>

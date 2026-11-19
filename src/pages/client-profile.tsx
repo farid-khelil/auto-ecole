@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar.tsx';
 import Icon from '../components/Icon.tsx';
 import DocumentPreviewModal from '../components/DocumentPreviewModal.tsx';
@@ -83,6 +83,7 @@ function editableValues(client: Client) {
 
 export default function ClientProfile() {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const { id = '' } = useParams();
 	const [client, setClient] = useState<Client | null>(null);
 	const [draft, setDraft] = useState<Client | null>(null);
@@ -275,6 +276,18 @@ export default function ClientProfile() {
 			alert(err instanceof Error ? err.message : 'تعذر استرجاع الملف');
 		} finally {
 			setIsArchivingOrRestoring(false);
+		}
+	}
+
+	async function handleDeleteClient() {
+		if (!client) return;
+		const confirmed = window.confirm(`هل أنت متأكد من رغبتك في حذف ملف المترشح "${client.name}" نهائياً؟\nلا يمكن التراجع عن هذا الإجراء.`);
+		if (!confirmed) return;
+		try {
+			await clientService.delete(String(client.id));
+			navigate('/clients', { replace: true });
+		} catch (err) {
+			alert(err instanceof Error ? err.message : 'تعذر حذف ملف المترشح.');
 		}
 	}
 
@@ -608,6 +621,7 @@ export default function ClientProfile() {
 					onTabChange={setActiveMainTab}
 					onPhotoUpload={handlePhotoUpload}
 					onPhotoRemove={handlePhotoRemove}
+					onDeleteClient={handleDeleteClient}
 				/>
 
 								<ProfileMainContent

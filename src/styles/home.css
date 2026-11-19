@@ -435,19 +435,19 @@ table {
 th {
   background: transparent;
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 14.5px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-align: right;
-  padding: 14px 22px;
+  padding: 16px 24px;
   font-weight: 700;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 td {
   border-bottom: 1px solid var(--border-subtle);
-  padding: 16px 22px;
-  font-size: 13.5px;
+  padding: 18px 24px;
+  font-size: 16.5px;
   color: var(--text-primary);
   vertical-align: middle;
   transition: background 0.1s ease;
@@ -465,48 +465,53 @@ tr:hover td {
 .client {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .client-avatar {
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  font-weight: 700;
-  width: 36px;
-  height: 36px;
+  border-radius: 14px;
+  font-weight: 800;
+  width: 56px;
+  height: 56px;
   background: var(--primary-tint);
   color: var(--primary);
-  font-size: 12px;
+  font-size: 16px;
   flex: none;
   overflow: hidden;
+  border: 2px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
 }
 
 .client-name {
   display: block;
   color: var(--text-primary);
-  font-weight: 700;
-  margin-bottom: 2px;
+  font-weight: 800;
+  font-size: 17.5px;
+  margin-bottom: 3px;
+  line-height: 1.3;
 }
 
 .client-phone {
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 14px;
   direction: ltr;
   text-align: right;
 }
 
 .pack {
   color: var(--text-secondary);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 /* ── Badges ── */
 .badge {
   border-radius: 999px;
   display: inline-block;
-  padding: 4px 10px;
-  font-size: 11.5px;
+  padding: 6px 14px;
+  font-size: 13.5px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -529,22 +534,22 @@ tr:hover td {
 /* ── Stages List (Minimalist) ── */
 .stages-list {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
   align-items: center;
 }
 
 .stage-tag {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
   background: var(--bg-card-alt);
   color: var(--text-muted);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .stage-tag.active {

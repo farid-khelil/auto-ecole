@@ -327,7 +327,10 @@ export default function VehiclesPage() {
         <div className="vehicles-page-head">
           <div>
             <div className="vehicles-eyebrow">أسطول المدرسة والسلامة</div>
-            <h1>إدارة المركبات والسيارات</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img src="/logo.png" alt="شعار مدرسة السياقة" className="page-header-logo" style={{ width: '38px', height: '38px' }} />
+              <h1>إدارة المركبات والسيارات</h1>
+            </div>
             <p>متابعة وتجديد الوثائق الإجبارية (التأمين، البطاقة الرمادية، مطفأة الحريق، صندوق الإسعاف) والتنبيهات الموقوتة</p>
           </div>
 

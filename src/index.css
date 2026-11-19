@@ -135,14 +135,18 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 17.5px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-page);
   color: var(--text-primary);
   font-family: var(--font-family);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 17.5px;
+  line-height: 1.65;
   direction: rtl;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -151,12 +155,14 @@ html, body {
 
 button {
   font-family: inherit;
+  font-size: 16px;
   color: inherit;
   cursor: pointer;
 }
 
 input, select, textarea {
   font-family: inherit;
+  font-size: 16px;
   color: inherit;
 }
 
@@ -167,6 +173,25 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 input::placeholder, textarea::placeholder {
   color: var(--text-muted);
+}
+
+.school-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.school-logo-img,
+.page-header-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  vertical-align: middle;
+  border-radius: 8px;
+  flex: none;
 }
 
 /* Subtle Scrollbars */
