@@ -55,6 +55,62 @@ export function isClassAB(training?: string): boolean {
   );
 }
 
+/**
+ * Formats a candidate's birth date for official candidate lists (النموذج 02):
+ * - If only the year is known (e.g. "1975", "1975-00-00", "1975-xx-xx", "xx/xx/1975"),
+ *   formats as "xx/xx/YYYY".
+ * - If a full date is provided (YYYY-MM-DD or DD/MM/YYYY), formats as "DD/MM/YYYY".
+ */
+export function formatCandidateBirthDate(dateStr?: string): string {
+  if (!dateStr) return '';
+  const trimmed = dateStr.trim();
+  if (!trimmed) return '';
+
+  // 1. Check if already in format xx/xx/YYYY or XX/XX/YYYY or 00/00/YYYY
+  const xxMatch = trimmed.match(/^(?:xx|XX|00)[/-](?:xx|XX|00)[/-](\d{4})$/);
+  if (xxMatch) {
+    return `xx/xx/${xxMatch[1]}`;
+  }
+
+  // 2. Check if YYYY-xx-xx or YYYY-XX-XX or YYYY-00-00 or YYYY/00/00
+  const yxxMatch = trimmed.match(/^(\d{4})[/-](?:xx|XX|00)[/-](?:xx|XX|00)$/);
+  if (yxxMatch) {
+    return `xx/xx/${yxxMatch[1]}`;
+  }
+
+  // 3. Check if only a 4-digit year: "1975"
+  if (/^\d{4}$/.test(trimmed)) {
+    return `xx/xx/${trimmed}`;
+  }
+
+  // 4. Standard YYYY-MM-DD or DD-MM-YYYY format
+  const parts = trimmed.split(/[-/]/);
+  if (parts.length === 3) {
+    if (parts[0].length === 4) {
+      const [year, month, day] = parts;
+      if (month === '00' || month.toLowerCase() === 'xx' || day === '00' || day.toLowerCase() === 'xx') {
+        return `xx/xx/${year}`;
+      }
+      return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+    }
+    if (parts[2].length === 4) {
+      const [day, month, year] = parts;
+      if (month === '00' || month.toLowerCase() === 'xx' || day === '00' || day.toLowerCase() === 'xx') {
+        return `xx/xx/${year}`;
+      }
+      return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+    }
+  }
+
+  // 5. Fallback: contains 4-digit year without valid day/month
+  const yearMatch = trimmed.match(/\b(19\d{2}|20\d{2})\b/);
+  if (yearMatch && (trimmed.toLowerCase().includes('xx') || trimmed.includes('00') || trimmed.length <= 7)) {
+    return `xx/xx/${yearMatch[1]}`;
+  }
+
+  return trimmed;
+}
+
 const STORAGE_KEY = 'auto-ecole.candidates-lists';
 
 export const candidatesListService = {
@@ -176,6 +232,121 @@ export function getCandidateLastExamDate(
 
   return "";
 }
+
+/**
+ * Checks whether a candidate is taking an exam for the very first time.
+ * Returns true ONLY if the candidate has never taken any exam before.
+ */
+export function isCandidateFirstExam(
+  candidate: Client,
+  record: CandidatesListRecord,
+  allLists: CandidatesListRecord[] = [],
+  allClients: Client[] = []
+): boolean {
+  const fullClient =
+    allClients.find(
+      (c) =>
+        String(c.id) === String(candidate.id) ||
+        Boolean(candidate.registrationNumber && c.registrationNumber === candidate.registrationNumber)
+    ) || candidate;
+
+  // 1. Stage check: anyone whose stage is beyond "قانون المرور" (e.g. مناورات, سياقة عامة, منتهي)
+  // has already taken at least one exam previously.
+  const stage = (fullClient.stage || candidate.stage || '').trim();
+  if (stage && stage !== 'قانون المرور') {
+    return false;
+  }
+
+  // 2. Check last exam date via getCandidateLastExamDate
+  const lastExamDate = getCandidateLastExamDate(candidate, record, allLists, allClients);
+  if (lastExamDate) {
+    return false;
+  }
+
+  // 3. Attendance card check: look for any past exam attempt with a date or recorded observation
+  if (fullClient.attendance?.exams) {
+    const currentExamDate = record.examDate?.trim();
+    for (const ex of fullClient.attendance.exams) {
+      if (ex.date && ex.date.trim()) {
+        const d = ex.date.trim();
+        if (currentExamDate ? d < currentExamDate : true) {
+          if (d !== currentExamDate) return false;
+        }
+      }
+      if (ex.observation && ex.observation.trim()) {
+        if (!currentExamDate || ex.date?.trim() !== currentExamDate) {
+          return false;
+        }
+      }
+    }
+  }
+
+  // 4. Other lists check: did they appear in an earlier list or have results in another list?
+  const currentExamDate = record.examDate?.trim();
+  const currentOrderDate = currentExamDate || record.depositDate?.trim() || record.createdAt?.trim() || '';
+
+  for (const otherList of allLists) {
+    if (otherList.id === record.id) continue;
+
+    const inOtherList = (otherList.candidates || []).some(
+      (c) =>
+        String(c.id) === String(candidate.id) ||
+        Boolean(candidate.registrationNumber && c.registrationNumber === candidate.registrationNumber)
+    );
+
+    if (!inOtherList) continue;
+
+    const otherResult =
+      otherList.results?.[String(candidate.id)] ||
+      (candidate.registrationNumber && otherList.results?.[candidate.registrationNumber]);
+    if (otherResult) {
+      return false;
+    }
+
+    const otherOrderDate =
+      otherList.examDate?.trim() ||
+      otherList.depositDate?.trim() ||
+      otherList.createdAt?.trim() ||
+      '';
+
+    if (otherOrderDate && currentOrderDate && otherOrderDate < currentOrderDate) {
+      return false;
+    }
+
+    if (otherList.examDate && otherList.examDate.trim()) {
+      if (!currentExamDate || otherList.examDate.trim() < currentExamDate) {
+        return false;
+      }
+    }
+  }
+
+  // 5. History check: check if any prior exam result history exists
+  if (fullClient.history) {
+    const hasPriorExamResult = fullClient.history.some(
+      (h) => h.action === 'exam_result'
+    );
+    if (hasPriorExamResult) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Returns only the candidates in a list record who are taking their exam for the very first time.
+ */
+export function getFirstTimeCandidates(
+  record: CandidatesListRecord,
+  allLists: CandidatesListRecord[] = [],
+  allClients: Client[] = []
+): Client[] {
+  const currentCandidates = getCurrentCandidates(record, allClients);
+  return currentCandidates.filter((c) =>
+    isCandidateFirstExam(c, record, allLists, allClients)
+  );
+}
+
 
 /**
  * Returns the next training stage in the progression sequence.

@@ -1,13 +1,35 @@
-import type { CandidatesListRecord } from './candidates-lists';
+import { type CandidatesListRecord, getFirstTimeCandidates } from './candidates-lists';
+import type { Client } from './clients';
 import { TRANSMITTAL_TEMPLATE_RAW } from './transmittal-template-raw';
+
+function getStoredListsFallback(): CandidatesListRecord[] {
+  try {
+    const raw = typeof window !== 'undefined' ? window.localStorage?.getItem('auto-ecole.candidates-lists') : null;
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function getStoredClientsFallback(): Client[] {
+  try {
+    const raw = typeof window !== 'undefined' ? window.localStorage?.getItem('auto-ecole.clients') : null;
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Returns the exact transmittal letter (جدول إرسال) HTML using the user-provided
  * template and its exact embedded fonts ("Card Arabic", "Card Latin", etc.),
  * styling, and layout.
  *
+ * NOTE: As per administrative requirements, only candidates taking their exam for
+ * the very first time (never had an exam before) are included in جدول إرسال.
+ *
  * Replaces:
- * - الرقــم with 1, 2, 3... corresponding to each candidate
+ * - الرقــم with 1, 2, 3... corresponding to each first-time candidate
  * - الصنف with each candidate's matching category (line-by-line)
  * - بيان الوثائق with candidates' names (line-by-line)
  * - Removes yellow input backgrounds/contenteditable attributes (renders as plain text)
@@ -20,10 +42,16 @@ export interface TransmittalLetterValues {
 export function getTransmittalLetterHtml(
   list: CandidatesListRecord,
   values: TransmittalLetterValues = {},
+  allLists: CandidatesListRecord[] = [],
+  allClients: Client[] = [],
 ): string {
-  const numbers = list.candidates.map((_, i) => `${i + 1}`);
-  const names = list.candidates.map((c) => c.name);
-  const categories = list.candidates.map((c) => c.training || 'B');
+  const listsToUse = allLists.length > 0 ? allLists : getStoredListsFallback();
+  const clientsToUse = allClients.length > 0 ? allClients : getStoredClientsFallback();
+  const firstTimeCandidates = getFirstTimeCandidates(list, listsToUse, clientsToUse);
+
+  const numbers = firstTimeCandidates.map((_, i) => `${i + 1}`);
+  const names = firstTimeCandidates.map((c) => c.name);
+  const categories = firstTimeCandidates.map((c) => c.training || 'B');
   const date = values.date ?? list.transmittalDate ?? list.depositDate;
   const dateText = date ? formatDateArabic(date) : '';
   const referenceNumber = values.referenceNumber ?? list.transmittalNumber ?? '';
@@ -40,8 +68,13 @@ export function getTransmittalLetterHtml(
 /**
  * Opens the transmittal letter in a new browser window for printing.
  */
-export function openTransmittalLetter(list: CandidatesListRecord, values?: TransmittalLetterValues): void {
-  const html = getTransmittalLetterHtml(list, values);
+export function openTransmittalLetter(
+  list: CandidatesListRecord,
+  values?: TransmittalLetterValues,
+  allLists: CandidatesListRecord[] = [],
+  allClients: Client[] = [],
+): void {
+  const html = getTransmittalLetterHtml(list, values, allLists, allClients);
   const win = window.open('', '_blank');
   if (!win) {
     alert('لم يتمكن المتصفح من فتح نافذة جديدة. تأكد من السماح بالنوافذ المنبثقة.');
@@ -54,8 +87,13 @@ export function openTransmittalLetter(list: CandidatesListRecord, values?: Trans
 /**
  * Downloads the filled transmittal letter as an HTML file.
  */
-export function downloadTransmittalLetter(list: CandidatesListRecord, values?: TransmittalLetterValues): void {
-  const html = getTransmittalLetterHtml(list, values);
+export function downloadTransmittalLetter(
+  list: CandidatesListRecord,
+  values?: TransmittalLetterValues,
+  allLists: CandidatesListRecord[] = [],
+  allClients: Client[] = [],
+): void {
+  const html = getTransmittalLetterHtml(list, values, allLists, allClients);
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -67,6 +105,67 @@ export function downloadTransmittalLetter(list: CandidatesListRecord, values?: T
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Returns the transmittal letter (جدول إرسال) HTML for a single client (only this client in the file).
+ */
+export function getClientTransmittalLetterHtml(
+  client: Client,
+  values: TransmittalLetterValues = {},
+): string {
+  const numbers = ['1'];
+  const names = [client.name || ''];
+  const categories = [client.training || 'B'];
+  const date = values.date || client.attendance?.submissionDate || client.registrationDate || new Date().toISOString().slice(0, 10);
+  const dateText = formatDateArabic(date);
+  const referenceNumber = values.referenceNumber ?? '';
+
+  return fillTransmittalTemplate(TRANSMITTAL_TEMPLATE_RAW, {
+    numbers,
+    names,
+    categories,
+    date: dateText,
+    referenceNumber,
+  });
+}
+
+/**
+ * Opens the transmittal letter for a single client in a new window for printing.
+ */
+export function openClientTransmittalLetter(
+  client: Client,
+  values?: TransmittalLetterValues,
+): void {
+  const html = getClientTransmittalLetterHtml(client, values);
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('لم يتمكن المتصفح من فتح نافذة جديدة. تأكد من السماح بالنوافذ المنبثقة.');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+}
+
+/**
+ * Downloads the filled transmittal letter for a single client as an HTML file.
+ */
+export function downloadClientTransmittalLetter(
+  client: Client,
+  values?: TransmittalLetterValues,
+): void {
+  const html = getClientTransmittalLetterHtml(client, values);
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const nameSuffix = (client.name || 'مترشح').trim().replace(/\s+/g, '-');
+  a.download = `جدول-إرسال-${nameSuffix}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 
 function formatDateArabic(dateStr: string): string {
   try {

@@ -23,7 +23,20 @@ export type HistoryFilter = 'all' | 'info' | 'payment' | 'stage' | 'document' | 
 
 function formatDate(value?: string) {
   if (!value) return 'غير محدد';
-  return new Intl.DateTimeFormat('ar-DZ', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T00:00:00`));
+  const trimmed = value.trim();
+  if (/^\d{4}$/.test(trimmed)) {
+    return `مفترض: ${trimmed}`;
+  }
+  if (trimmed.startsWith('xx/xx/') || trimmed.startsWith('XX/XX/')) {
+    return `مفترض: ${trimmed.slice(6)}`;
+  }
+  try {
+    const d = new Date(`${trimmed}T00:00:00`);
+    if (isNaN(d.getTime())) return trimmed;
+    return new Intl.DateTimeFormat('ar-DZ', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+  } catch {
+    return trimmed;
+  }
 }
 
 function formatCurrency(amount?: number) {
@@ -143,9 +156,45 @@ export default function ProfileMainContent({
                 </div>
 
                 <div>
-                  <span className="detail-label">تاريخ الميلاد</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span className="detail-label" style={{ margin: 0 }}>تاريخ الميلاد</span>
+                    {isEditing && (
+                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: '#64748b' }}>
+                        <input
+                          type="checkbox"
+                          checked={/^\d{4}$/.test(draft.birthDate || '') || (draft.birthDate || '').startsWith('xx/xx/')}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              const match = (draft.birthDate || '').match(/\b(19\d{2}|20\d{2})\b/);
+                              onUpdateDraft('birthDate', match ? match[1] : '');
+                            } else {
+                              onUpdateDraft('birthDate', '');
+                            }
+                          }}
+                        />
+                        <span>سنة فقط</span>
+                      </label>
+                    )}
+                  </div>
                   {isEditing ? (
-                    <input className="detail-input" type="date" value={draft.birthDate} onChange={(event) => onUpdateDraft('birthDate', event.target.value)} />
+                    (/^\d{4}$/.test(draft.birthDate || '') || (draft.birthDate || '').startsWith('xx/xx/')) ? (
+                      <input
+                        className="detail-input"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="سنة الميلاد (مثال: 1975)"
+                        maxLength={4}
+                        value={(draft.birthDate || '').replace(/^xx\/xx\//, '')}
+                        onChange={(event) => onUpdateDraft('birthDate', event.target.value.replace(/\D/g, '').slice(0, 4))}
+                      />
+                    ) : (
+                      <input
+                        className="detail-input"
+                        type="date"
+                        value={draft.birthDate}
+                        onChange={(event) => onUpdateDraft('birthDate', event.target.value)}
+                      />
+                    )
                   ) : (
                     <div className="detail-value">{formatDate(client.birthDate)}</div>
                   )}

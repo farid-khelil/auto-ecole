@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Icon from './Icon.tsx';
 import type { Client } from '../services/clients';
+import { formatCandidateBirthDate } from '../services/candidates-lists';
 import { matchesArabicSearch } from '../services/arabic-search';
 import '../styles/candidates-list.css';
 
@@ -307,7 +308,7 @@ export default function CandidatesListModal({
                             </div>
                           )}
                         </td>
-                        <td>{client.birthDate || '—'}</td>
+                        <td>{client.birthDate ? formatCandidateBirthDate(client.birthDate) : '—'}</td>
                         <td>{client.address || '—'}</td>
                         <td dir="ltr" style={{ textAlign: 'right' }}>
                           {client.phone}
@@ -420,7 +421,7 @@ export default function CandidatesListModal({
                     <tr key={client.id}>
                       <td style={{ textAlign: 'center' }}>{index + 1}</td>
                       <td style={{ fontWeight: 800 }}>{client.name}</td>
-                      <td>{client.birthDate || '—'}</td>
+                      <td>{client.birthDate ? formatCandidateBirthDate(client.birthDate) : '—'}</td>
                       <td>{client.address || '—'}</td>
                       <td dir="ltr" style={{ textAlign: 'center' }}>
                         {client.phone}

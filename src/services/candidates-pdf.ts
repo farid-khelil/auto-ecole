@@ -7,6 +7,7 @@ import {
   isClassAB,
   getCandidateLastExamDate,
   getCurrentCandidates,
+  formatCandidateBirthDate,
 } from "./candidates-lists";
 import { clientService, type Client } from "./clients";
 import { appAssetUrl } from "./app-assets";
@@ -183,11 +184,9 @@ export async function generateCandidatesListPdf(
       color: textColor,
     });
   }
-  // Keep PDF dates identical to the Excel generator: DD/MM/YYYY.
+  // Keep PDF dates identical to the Excel generator: DD/MM/YYYY, or xx/xx/YYYY for year-only birth dates.
   function formatDate(dateStr?: string): string {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    return day && month && year ? `${day}/${month}/${year}` : dateStr;
+    return formatCandidateBirthDate(dateStr);
   }
 
   function getExamType(stage?: string): string {

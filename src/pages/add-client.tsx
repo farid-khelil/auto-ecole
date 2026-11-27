@@ -26,6 +26,7 @@ export default function AddClient() {
 	const [stage, setStage] = useState<string>('قانون المرور');
 	const [obtainedCategories, setObtainedCategories] = useState<string[]>([]);
 	const [birthDate, setBirthDate] = useState('');
+	const [isYearOnlyBirthDate, setIsYearOnlyBirthDate] = useState(false);
 	const [paidAmount, setPaidAmount] = useState<number>(0);
 	const [totalAmount, setTotalAmount] = useState<number>(35000);
 	const [isGeneratingMedicalCertificate, setIsGeneratingMedicalCertificate] = useState(false);
@@ -64,8 +65,12 @@ export default function AddClient() {
 
 	const now = new Date();
 	const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-	const birthDateValue = birthDate ? new Date(`${birthDate}T00:00:00`) : null;
-	const age = birthDateValue ? now.getFullYear() - birthDateValue.getFullYear() - (now < new Date(now.getFullYear(), birthDateValue.getMonth(), birthDateValue.getDate()) ? 1 : 0) : null;
+	const birthDateValue = birthDate && !isYearOnlyBirthDate ? new Date(`${birthDate}T00:00:00`) : null;
+	const age = isYearOnlyBirthDate && birthDate
+		? now.getFullYear() - parseInt(birthDate, 10)
+		: (birthDateValue && !isNaN(birthDateValue.getTime())
+			? now.getFullYear() - birthDateValue.getFullYear() - (now < new Date(now.getFullYear(), birthDateValue.getMonth(), birthDateValue.getDate()) ? 1 : 0)
+			: null);
 	const documentsForClient = age !== null && age < 18 ? [...clientDocuments, parentalAuthorization] : clientDocuments;
 
 	async function submitForm(event: FormEvent<HTMLFormElement>) {
@@ -245,8 +250,43 @@ export default function AddClient() {
 								<input id="phone" name="phone" inputMode="tel" placeholder="رقم الهاتف" />
 							</div>
 							<div className="field">
-								<label htmlFor="birthDate">تاريخ الميلاد</label>
-								<input id="birthDate" name="birthDate" type="date" value={birthDate} onChange={(event) => setBirthDate(event.target.value)} />
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+									<label htmlFor="birthDate" style={{ margin: 0 }}>تاريخ الميلاد</label>
+									<label style={{ fontSize: '11.5px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: '#64748b' }}>
+										<input
+											type="checkbox"
+											style={{ width: '12px', height: '12px', transform: 'translateY(-1px)' }}
+											checked={isYearOnlyBirthDate}
+											onChange={(e) => {
+												setIsYearOnlyBirthDate(e.target.checked);
+												if (e.target.checked && birthDate.length >= 4) {
+													setBirthDate(birthDate.slice(0, 4));
+												}
+											}}
+										/>
+										<span>سنة فقط </span>
+									</label>
+								</div>
+								{isYearOnlyBirthDate ? (
+									<input
+										id="birthDate"
+										name="birthDate"
+										type="text"
+										inputMode="numeric"
+										placeholder="سنة الميلاد (مثال: 1975)"
+										maxLength={4}
+										value={birthDate}
+										onChange={(event) => setBirthDate(event.target.value.replace(/\D/g, '').slice(0, 4))}
+									/>
+								) : (
+									<input
+										id="birthDate"
+										name="birthDate"
+										type="date"
+										value={birthDate}
+										onChange={(event) => setBirthDate(event.target.value)}
+									/>
+								)}
 							</div>
 							<div className="field">
 								<label htmlFor="birthPlace">مكان الميلاد</label>

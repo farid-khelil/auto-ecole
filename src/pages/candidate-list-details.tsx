@@ -9,6 +9,8 @@ import {
   type ExamResult,
   getCandidateLastExamDate,
   getCurrentCandidates,
+  getFirstTimeCandidates,
+  formatCandidateBirthDate,
   getNextStage,
   applyExamResultToClient,
 } from '../services/candidates-lists';
@@ -271,6 +273,11 @@ export default function CandidateListDetailsPage() {
     [list, allClients],
   );
 
+  const firstTimeCandidates = useMemo(
+    () => (list ? getFirstTimeCandidates(list, allLists, allClients) : []),
+    [list, allLists, allClients],
+  );
+
   const availableStages = useMemo(() => {
     const stages = Array.from(new Set(currentCandidates.map((c) => c.stage || 'قانون المرور'))).filter(Boolean);
     return stages.length > 0 ? stages : ['قانون المرور', 'مناورات', 'سياقة عامة'];
@@ -486,7 +493,7 @@ export default function CandidateListDetailsPage() {
         <div className="list-stats-grid">
           <div className="list-stat-card">
             <div className="stat-label">إجمالي المترشحين</div>
-            <div className="stat-value" style={{ color: '#ffffff' }}>
+            <div className="stat-value" style={{ color: 'var(--text-primary)' }}>
               {stats.total}
               <span className="stat-unit">مترشح</span>
             </div>
@@ -688,7 +695,7 @@ export default function CandidateListDetailsPage() {
                           to={`/clients/${client.id}`}
                           style={{
                             textDecoration: 'none',
-                            color: '#ffffff',
+                            color: 'var(--text-primary)',
                             fontWeight: 800,
                             fontSize: '13.5px',
                           }}
@@ -698,7 +705,7 @@ export default function CandidateListDetailsPage() {
                         </Link>
                       </td>
                       <td>
-                        <span>{client.birthDate || '—'}</span>
+                        <span>{client.birthDate ? formatCandidateBirthDate(client.birthDate) : '—'}</span>
                         {client.birthPlace && (
                           <span style={{ color: '#8890a4', fontSize: '11px', display: 'block' }}>
                             بـ {client.birthPlace}
@@ -752,7 +759,7 @@ export default function CandidateListDetailsPage() {
                         </span>
                       </td>
                       <td>
-                        <span style={{ fontWeight: 700, color: '#334155', fontSize: '12.5px' }}>
+                        <span style={{ fontWeight: 700, color: 'var(--text-secondary)', fontSize: '12.5px' }}>
                           {(() => {
                             const lastDate = getCandidateLastExamDate(
                               client,
@@ -777,16 +784,27 @@ export default function CandidateListDetailsPage() {
                             cursor: 'pointer',
                             border: '1.5px solid',
                             outline: 'none',
-                            backgroundColor: '#2d384d',
-                            color:
-                              displayedResult === 'ناجح'
-                                ? '#86efac'
+                            backgroundColor: displayedResult
+                              ? displayedResult === 'ناجح'
+                                ? 'var(--success-tint)'
                                 : displayedResult === 'راسب'
-                                ? '#fca5a5'
-                                : displayedResult === 'غائب'
-                                ? '#fde68a'
-                                : '#ffffff',
-                            borderColor: '#3b4863',
+                                ? 'var(--danger-tint)'
+                                : 'var(--warning-tint)'
+                              : 'var(--bg-input)',
+                            color: displayedResult
+                              ? displayedResult === 'ناجح'
+                                ? 'var(--success)'
+                                : displayedResult === 'راسب'
+                                ? 'var(--danger)'
+                                : 'var(--warning-text)'
+                              : 'var(--text-primary)',
+                            borderColor: displayedResult
+                              ? displayedResult === 'ناجح'
+                                ? 'var(--success-border)'
+                                : displayedResult === 'راسب'
+                                ? 'var(--danger-border)'
+                                : 'var(--warning-border)'
+                              : 'var(--border-input)',
                           }}
                           title="تحديد نتيجة الامتحان — تُحفظ جميع النتائج بزر الحفظ"
                         >
@@ -869,7 +887,16 @@ export default function CandidateListDetailsPage() {
       {activePreview === 'transmittal' && (
         <DocumentPreviewModal
           title={<><Icon name="send" size={20} /> جــــــــــــــــدول إرســــــــــــال</>}
-          summary={<>تاريخ الإيداع: <strong>{formatDate(list.depositDate)}</strong>{' • '}عدد المترشحين: <strong>{list.candidates.length}</strong></>}
+          summary={
+            <>
+              تاريخ الإيداع: <strong>{formatDate(list.depositDate)}</strong>
+              {' • '}
+              عدد المترشحين (الامتحان الأول): <strong>{firstTimeCandidates.length}</strong>
+              {firstTimeCandidates.length !== list.candidates.length && (
+                <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}> (من أصل <strong>{list.candidates.length}</strong> في القائمة)</span>
+              )}
+            </>
+          }
           controls={
             <>
               <label className="document-preview-field">
@@ -891,13 +918,18 @@ export default function CandidateListDetailsPage() {
                   onBlur={() => void saveTransmittalDetails()}
                 />
               </label>
+              {firstTimeCandidates.length === 0 && (
+                <div style={{ color: '#d97706', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', background: '#fffbeb', border: '1px solid #fde68a', padding: '6px 12px', borderRadius: '8px', gridColumn: '1 / -1' }}>
+                  <span>⚠️ لا يوجد مترشحون يجتازون الامتحان لأول مرة في هذه القائمة (جميعهم لديهم امتحانات سابقة).</span>
+                </div>
+              )}
             </>
           }
           onClose={closeDocumentPreview}
-          preview={<iframe ref={transmittalFrameRef} srcDoc={getTransmittalLetterHtml(list, { referenceNumber: transmittalNumber, date: transmittalDate })} style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} title="معاينة جدول الإرسال" />}
+          preview={<iframe ref={transmittalFrameRef} srcDoc={getTransmittalLetterHtml(list, { referenceNumber: transmittalNumber, date: transmittalDate }, allLists, allClients)} style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} title="معاينة جدول الإرسال" />}
           downloadLabel="تحميل جدول الإرسال"
           downloadTitle="تنزيل جدول الإرسال كملف HTML قابل للطباعة"
-          onDownload={() => downloadTransmittalLetter(list, { referenceNumber: transmittalNumber, date: transmittalDate })}
+          onDownload={() => downloadTransmittalLetter(list, { referenceNumber: transmittalNumber, date: transmittalDate }, allLists, allClients)}
           printLabel="طباعة جدول الإرسال"
           onPrint={() => transmittalFrameRef.current?.contentWindow?.print()}
         />

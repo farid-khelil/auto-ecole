@@ -5,6 +5,7 @@ import {
   isClassAB,
   getCandidateLastExamDate,
   getCurrentCandidates,
+  formatCandidateBirthDate,
 } from './candidates-lists';
 import { clientService, type Client } from './clients';
 import { appAssetUrl } from './app-assets';
@@ -51,9 +52,7 @@ export async function generateFilledXlsx(
   }
 
   function formatDate(dateStr?: string): string {
-    if (!dateStr) return '';
-    const [y, m, d] = dateStr.split('-');
-    return d && m && y ? `${d}/${m}/${y}` : dateStr;
+    return formatCandidateBirthDate(dateStr);
   }
 
   // Escape XML special characters

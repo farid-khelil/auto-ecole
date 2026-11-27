@@ -26,6 +26,7 @@ export type ProfileHeaderProps = {
   onOpenConvocationModal: () => void;
   onOpenTransferModal: () => void;
   onOpenEvaluationCardModal: () => void;
+  onOpenTransmittalModal?: () => void;
   onArchiveClick: () => void;
   onRestoreClient: () => void;
   onTabChange: (tab: MainTab) => void;
@@ -52,6 +53,7 @@ export default function ProfileHeader({
   onOpenConvocationModal,
   onOpenTransferModal,
   onOpenEvaluationCardModal,
+  onOpenTransmittalModal,
   onArchiveClick,
   onRestoreClient,
   onTabChange,
@@ -255,6 +257,17 @@ export default function ProfileHeader({
           >
             <Icon name="document" size={17} /> بطاقة تقييم
           </button>
+          {onOpenTransmittalModal && (
+            <button
+              className="button"
+              type="button"
+              title="معاينة وطباعة جدول الإرسال الفردي للمترشح"
+              onClick={onOpenTransmittalModal}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Icon name="send" size={17} /> جدول إرسال
+            </button>
+          )}
           <button
             className="button"
             type="button"

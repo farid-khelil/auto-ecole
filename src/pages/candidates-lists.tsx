@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar.tsx';
 import Icon from '../components/Icon.tsx';
 import DocumentPreviewModal from '../components/DocumentPreviewModal.tsx';
 import { clientService, type Client } from '../services/clients';
-import { candidatesListService, type CandidatesListRecord } from '../services/candidates-lists';
+import { candidatesListService, type CandidatesListRecord, formatCandidateBirthDate } from '../services/candidates-lists';
 import { generateFilledXlsx } from '../services/xlsx-generator';
 import { downloadCandidatesListPdf, generateCandidatesListPdf } from '../services/candidates-pdf';
 import { matchesArabicSearch } from '../services/arabic-search';
@@ -365,21 +365,21 @@ return (
                     style={{ cursor: 'pointer' }}
                   >
                     <td>
-                      <div style={{ fontWeight: 800, color: '#ffffff', fontSize: '13px' }}>
+                      <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '13px' }}>
                         <Icon name="upload" size={15} /> إيداع {formatDate(item.depositDate)}
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 700, color: '#ffffff' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
                         {formatDate(item.examDate)}
                       </span>
                     </td>
                     <td>
-                      <strong style={{ color: '#ffffff' }}>
+                      <strong style={{ color: 'var(--text-primary)' }}>
                         {item.candidates.length} مترشح
                       </strong>
                     </td>
-                    <td style={{ color: '#8890a4' }}>
+                    <td style={{ color: 'var(--text-muted)' }}>
                       {new Date(item.createdAt).toLocaleDateString('ar-DZ')}
                     </td>
                   </tr>
@@ -390,7 +390,7 @@ return (
             {lists.length === 0 && (
               <div style={{ textAlign: 'center', padding: '45px 20px', color: '#8890a4' }}>
                 <div style={{ color: '#674fd7', marginBottom: '10px' }}><Icon name="list" size={36} /></div>
-                <div style={{ fontWeight: 800, fontSize: '15px', color: '#333849' }}>
+                <div style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-primary)' }}>
                   لا توجد أي قائمة مترشحين بعد
                 </div>
                 <p style={{ fontSize: '12px', marginTop: '6px' }}>
@@ -642,7 +642,7 @@ return (
                           </td>
                           <td>{idx + 1}</td>
                           <td style={{ fontWeight: 750 }}>{client.name}</td>
-                          <td>{client.birthDate || '—'}</td>
+                          <td>{client.birthDate ? formatCandidateBirthDate(client.birthDate) : '—'}</td>
                           <td>{client.address || '—'}</td>
                           <td dir="ltr" style={{ textAlign: 'right' }}>
                             {client.phone}

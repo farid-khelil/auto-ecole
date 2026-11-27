@@ -11,6 +11,7 @@ import { downloadMedicalCertificatePdf, generateMedicalCertificatePdf, type Medi
 import { getConvocationLetterHtml, downloadConvocationLetter, hourToArabic } from '../services/convocation-letter';
 import { getTransferRequestHtml, downloadTransferRequest, splitClientName } from '../services/transfer-request';
 import { getEvaluationCardHtml, downloadEvaluationCard, formatEvaluationBirth, formatEvaluationDate } from '../services/evaluation-card';
+import { getClientTransmittalLetterHtml, downloadClientTransmittalLetter } from '../services/transmittal-letter';
 import '../styles/client-profile.css';
 import '../styles/payments.css';
 import '../styles/candidates-list.css';
@@ -154,6 +155,12 @@ export default function ClientProfile() {
 	const [evaluationRegDate, setEvaluationRegDate] = useState('');
 	const [evaluationSubDate, setEvaluationSubDate] = useState('');
 	const [evaluationWilaya, setEvaluationWilaya] = useState('المدية');
+
+	// Transmittal Letter (جدول إرسال) State
+	const transmittalFrameRef = useRef<HTMLIFrameElement>(null);
+	const [isTransmittalModalOpen, setIsTransmittalModalOpen] = useState(false);
+	const [transmittalRefNumber, setTransmittalRefNumber] = useState('');
+	const [transmittalDate, setTransmittalDate] = useState(() => new Date().toISOString().slice(0, 10));
 
 	const transferReferenceText = `${transferDate || new Date().toISOString().slice(0, 10)} رقم : ${transferNumber || '02'} / م.و.أ.ط/ ${transferYear || new Date().getFullYear().toString()}`;
 
@@ -542,6 +549,13 @@ export default function ClientProfile() {
 		setIsEvaluationModalOpen(true);
 	}
 
+	function handleOpenTransmittalModal() {
+		if (!currentClient) return;
+		setTransmittalRefNumber('');
+		setTransmittalDate(currentClient.attendance?.submissionDate || currentClient.registrationDate || new Date().toISOString().slice(0, 10));
+		setIsTransmittalModalOpen(true);
+	}
+
 	function cancelEdit() {
 		setDraft(client);
 		setSaveError('');
@@ -616,6 +630,7 @@ export default function ClientProfile() {
 					onOpenConvocationModal={handleOpenConvocationModal}
 					onOpenTransferModal={handleOpenTransferModal}
 					onOpenEvaluationCardModal={handleOpenEvaluationModal}
+					onOpenTransmittalModal={handleOpenTransmittalModal}
 					onArchiveClick={() => setIsArchiveModalOpen(true)}
 					onRestoreClient={handleRestoreClient}
 					onTabChange={setActiveMainTab}
@@ -1150,6 +1165,55 @@ export default function ClientProfile() {
 					onDownload={() => downloadMedicalCertificatePdf(medicalCertificateData())}
 					printLabel="طباعة الشهادة الطبية"
 					onPrint={() => medicalFrameRef.current?.contentWindow?.print()}
+				/>
+			)}
+
+			{/* Transmittal Letter (جدول إرسال) Modal */}
+			{isTransmittalModalOpen && currentClient && (
+				<DocumentPreviewModal
+					title={<><Icon name="send" size={20} /> جــــــــــــــــدول إرســــــــــــال</>}
+					summary={<>المترشح: <strong>{currentClient.name}</strong>{' • '}الصنف: <strong>{currentClient.training || 'B'}</strong></>}
+					controls={
+						<>
+							<label className="document-preview-field">
+								<span>الرقــــــــــــــــم</span>
+								<input
+									type="text"
+									value={transmittalRefNumber}
+									onChange={(event) => setTransmittalRefNumber(event.target.value)}
+									placeholder="رقم الإرسال"
+								/>
+							</label>
+							<label className="document-preview-field">
+								<span>التاريخ</span>
+								<input
+									type="date"
+									value={transmittalDate}
+									onChange={(event) => setTransmittalDate(event.target.value)}
+								/>
+							</label>
+						</>
+					}
+					onClose={() => setIsTransmittalModalOpen(false)}
+					preview={
+						<iframe
+							ref={transmittalFrameRef}
+							srcDoc={getClientTransmittalLetterHtml(currentClient, {
+								referenceNumber: transmittalRefNumber,
+								date: transmittalDate,
+							})}
+							style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+							title="معاينة جدول الإرسال"
+						/>
+					}
+					downloadLabel="تحميل جدول الإرسال"
+					downloadTitle="تنزيل جدول الإرسال كملف HTML قابل للطباعة"
+					onDownload={() => downloadClientTransmittalLetter(currentClient, {
+						referenceNumber: transmittalRefNumber,
+						date: transmittalDate,
+					})}
+					printLabel="طباعة جدول الإرسال"
+					onPrint={() => transmittalFrameRef.current?.contentWindow?.print()}
 				/>
 			)}
 		</main>

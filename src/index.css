@@ -81,48 +81,66 @@
    LIGHT THEME — Clean, Airy, Minimal SaaS
    ═══════════════════════════════════════════════════ */
 :root[data-theme="light"] {
-  --bg-page: #f8f9fc;
+  /* Surfaces & Backgrounds */
+  --bg-page: #f8fafc;
   --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-alt: #f4f6fa;
+  --bg-card-alt: #f1f5f9;
   --bg-input: #ffffff;
-  --bg-hover: #f1f3f8;
+  --bg-hover: #f1f5f9;
 
-  --border-subtle: #f0f2f7;
-  --border-card: #e8ebf2;
-  --border-input: #d8deeb;
+  /* Borders & Shadows */
+  --border-subtle: #e2e8f0;
+  --border-card: #e2e8f0;
+  --border-input: #cbd5e1;
+  --border-focus: #2563eb;
 
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.03);
-  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.04);
-  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.06);
-  --shadow-lg: 0 12px 28px rgba(16, 24, 40, 0.08);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
 
-  --text-primary: #12141a;
-  --text-secondary: #636779;
-  --text-muted: #8e93a6;
-  --text-light: #b4b9cb;
+  /* Typography - Crisp & High Contrast */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
 
-  --primary-tint: rgba(52, 99, 214, 0.08);
-  --primary-border: rgba(52, 99, 214, 0.2);
-  --primary-badge: rgba(52, 99, 214, 0.08);
-  --purple-badge: rgba(52, 99, 214, 0.08);
+  /* Brand / Primary */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #2563eb;
+  --primary-tint: rgba(37, 99, 235, 0.08);
+  --primary-border: rgba(37, 99, 235, 0.22);
+  --primary-badge: rgba(37, 99, 235, 0.1);
+  --purple-badge: rgba(37, 99, 235, 0.1);
 
+  /* Semantic - Readable on light backgrounds */
+  --success: #16a34a;
+  --success-hover: #15803d;
   --success-tint: #ecfdf5;
-  --success-border: #d1fae5;
+  --success-border: #a7f3d0;
   --success-badge: #ecfdf5;
 
+  --warning: #d97706;
+  --warning-hover: #b45309;
   --warning-tint: #fffbeb;
-  --warning-border: #fef3c7;
+  --warning-border: #fde68a;
   --warning-text: #b45309;
   --warning-badge: #fffbeb;
+  --warning-light: #d97706;
 
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
   --danger-tint: #fef2f2;
-  --danger-border: #fee2e2;
+  --danger-border: #fecaca;
   --danger-text: #b91c1c;
   --danger-badge: #fef2f2;
 
+  --info: #2563eb;
+  --info-hover: #1d4ed8;
   --info-tint: #eff6ff;
-  --info-border: #dbeafe;
+  --info-border: #bfdbfe;
   --info-badge: #eff6ff;
 }
 
